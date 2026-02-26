@@ -12,7 +12,7 @@ const FRONT_URL = process.env.NEXT_PUBLIC_FRONT_URL || 'http://localhost:3003';
 
 export function MemberQr({ memberId }: MemberQrProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [url] = useState(`${FRONT_URL}/member.html?id=${memberId}`);
+  const [url] = useState(`${FRONT_URL}/?id=${memberId}`);
 
   useEffect(() => {
     if (!canvasRef.current) return;

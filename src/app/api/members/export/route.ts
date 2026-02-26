@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     row.height = ROW_HEIGHT;
 
     // QR PNG 생성 (Buffer)
-    const qrUrl = `${FRONT_URL}/member.html?id=${member.id}`;
+    const qrUrl = `${FRONT_URL}/?id=${member.id}`;
     const qrBuffer = await QRCode.toBuffer(qrUrl, {
       width: QR_SIZE,
       margin: 1,
