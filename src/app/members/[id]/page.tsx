@@ -54,52 +54,84 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">멤버 상세</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" asChild>
-            <Link href="/members">목록</Link>
-          </Button>
-          <Button asChild>
-            <Link href={`/members/${id}/edit`}>수정</Link>
-          </Button>
+    <>
+      {/* 프린트 전용 스타일 */}
+      <style>{`
+        @media print {
+          body > * { display: none !important; }
+          #print-area { display: block !important; }
+        }
+        #print-area { display: none; }
+      `}</style>
+
+      {/* 프린트 영역 */}
+      <div id="print-area" style={{ fontFamily: 'sans-serif', padding: '24px' }}>
+        <h2 style={{ marginBottom: '16px', fontSize: '18px', fontWeight: 'bold' }}>멤버 정보</h2>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px' }}>
+          <tbody>
+            {FIELD_LABELS.map(({ key, label }) => {
+              const value = member[key as keyof typeof member];
+              if (value === undefined || value === null || value === '') return null;
+              return (
+                <tr key={key} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <td style={{ padding: '8px', color: '#6b7280', width: '120px', fontSize: '13px' }}>{label}</td>
+                  <td style={{ padding: '8px', fontWeight: 500, fontSize: '13px' }}>{String(value)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <div id="print-qr-canvas" />
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">멤버 상세</h1>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => window.print()}>인쇄</Button>
+            <Button variant="outline" asChild>
+              <Link href="/members">목록</Link>
+            </Button>
+            <Button asChild>
+              <Link href={`/members/${id}/edit`}>수정</Link>
+            </Button>
+          </div>
         </div>
-      </div>
 
-      <div className="rounded-lg border bg-white divide-y">
-        {FIELD_LABELS.map(({ key, label }) => {
-          const value = member[key as keyof typeof member];
-          return (
-            <div key={key} className="flex items-center px-6 py-3">
-              <span className="w-32 text-sm text-gray-500 shrink-0">{label}</span>
-              <span className="text-sm font-medium">
-                {key === 'chosenDiocese' && value ? (
-                  <Badge variant="secondary">{String(value)}</Badge>
-                ) : value !== undefined && value !== null && value !== '' ? (
-                  String(value)
-                ) : (
-                  <span className="text-gray-300">-</span>
-                )}
-              </span>
+        <div className="rounded-lg border bg-white divide-y">
+          {FIELD_LABELS.map(({ key, label }) => {
+            const value = member[key as keyof typeof member];
+            return (
+              <div key={key} className="flex items-center px-6 py-3">
+                <span className="w-32 text-sm text-gray-500 shrink-0">{label}</span>
+                <span className="text-sm font-medium">
+                  {key === 'chosenDiocese' && value ? (
+                    <Badge variant="secondary">{String(value)}</Badge>
+                  ) : value !== undefined && value !== null && value !== '' ? (
+                    String(value)
+                  ) : (
+                    <span className="text-gray-300">-</span>
+                  )}
+                </span>
+              </div>
+            );
+          })}
+          {member.profile && (
+            <div className="flex items-start px-6 py-3">
+              <span className="w-32 text-sm text-gray-500 shrink-0">프로필 이미지</span>
+              <img src={member.profile} alt="프로필" className="h-24 w-24 rounded-md object-cover" />
             </div>
-          );
-        })}
-        {member.profile && (
-          <div className="flex items-start px-6 py-3">
-            <span className="w-32 text-sm text-gray-500 shrink-0">프로필 이미지</span>
-            <img src={member.profile} alt="프로필" className="h-24 w-24 rounded-md object-cover" />
-          </div>
-        )}
-        {member.qr && (
-          <div className="flex items-start px-6 py-3">
-            <span className="w-32 text-sm text-gray-500 shrink-0">QR 코드</span>
-            <img src={member.qr} alt="QR" className="h-24 w-24 object-contain" />
-          </div>
-        )}
-      </div>
+          )}
+          {member.qr && (
+            <div className="flex items-start px-6 py-3">
+              <span className="w-32 text-sm text-gray-500 shrink-0">QR 코드</span>
+              <img src={member.qr} alt="QR" className="h-24 w-24 object-contain" />
+            </div>
+          )}
+        </div>
 
-      <MemberQr memberId={id} />
-    </div>
+        <MemberQr memberId={id} printTargetId="print-qr-canvas" />
+      </div>
+    </>
   );
 }
