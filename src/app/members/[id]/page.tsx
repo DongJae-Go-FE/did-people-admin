@@ -26,6 +26,8 @@ const FIELD_LABELS: { key: string; label: string }[] = [
   { key: 'emergencyNum', label: '비상 연락처' },
 ];
 
+const FRONT_URL = process.env.NEXT_PUBLIC_FRONT_URL || 'http://localhost:3003';
+
 export default function MemberDetailPage({ params }: DetailPageProps) {
   const { id } = use(params);
 
@@ -53,85 +55,95 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
     );
   }
 
+  async function handlePrint() {
+    const QRCode = (await import('qrcode')).default;
+    const qrDataUrl = await QRCode.toDataURL(`${FRONT_URL}/?id=${id}`, {
+      width: 160,
+      margin: 2,
+      color: { dark: '#18181b', light: '#ffffff' },
+    });
+
+    const rows = FIELD_LABELS.map(({ key, label }) => {
+      const value = member![key as keyof typeof member];
+      if (value === undefined || value === null || value === '') return '';
+      return `<tr>
+        <td style="padding:8px 12px;color:#6b7280;width:120px;font-size:13px;border-bottom:1px solid #e5e7eb">${label}</td>
+        <td style="padding:8px 12px;font-weight:500;font-size:13px;border-bottom:1px solid #e5e7eb">${String(value)}</td>
+      </tr>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>멤버 정보</title>
+  <style>
+    body { font-family: sans-serif; padding: 32px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <h2 style="margin-bottom:16px;font-size:18px;font-weight:bold">멤버 정보</h2>
+  <table><tbody>${rows}</tbody></table>
+  <img src="${qrDataUrl}" width="160" height="160" alt="QR 코드"/>
+  <script>window.onload = function(){ window.print(); window.close(); }</script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank', 'width=600,height=800');
+    if (!win) return;
+    win.document.write(html);
+    win.document.close();
+  }
+
   return (
-    <>
-      {/* 프린트 전용 스타일 */}
-      <style>{`
-        @media print {
-          body > * { display: none !important; }
-          #print-area { display: block !important; }
-        }
-        #print-area { display: none; }
-      `}</style>
-
-      {/* 프린트 영역 */}
-      <div id="print-area" style={{ fontFamily: 'sans-serif', padding: '24px' }}>
-        <h2 style={{ marginBottom: '16px', fontSize: '18px', fontWeight: 'bold' }}>멤버 정보</h2>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px' }}>
-          <tbody>
-            {FIELD_LABELS.map(({ key, label }) => {
-              const value = member[key as keyof typeof member];
-              if (value === undefined || value === null || value === '') return null;
-              return (
-                <tr key={key} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '8px', color: '#6b7280', width: '120px', fontSize: '13px' }}>{label}</td>
-                  <td style={{ padding: '8px', fontWeight: 500, fontSize: '13px' }}>{String(value)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <div id="print-qr-canvas" />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">멤버 상세</h1>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handlePrint}>인쇄</Button>
+          <Button variant="outline" asChild>
+            <Link href="/members">목록</Link>
+          </Button>
+          <Button asChild>
+            <Link href={`/members/${id}/edit`}>수정</Link>
+          </Button>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">멤버 상세</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => window.print()}>인쇄</Button>
-            <Button variant="outline" asChild>
-              <Link href="/members">목록</Link>
-            </Button>
-            <Button asChild>
-              <Link href={`/members/${id}/edit`}>수정</Link>
-            </Button>
+      <div className="rounded-lg border bg-white divide-y">
+        {FIELD_LABELS.map(({ key, label }) => {
+          const value = member[key as keyof typeof member];
+          return (
+            <div key={key} className="flex items-center px-6 py-3">
+              <span className="w-32 text-sm text-gray-500 shrink-0">{label}</span>
+              <span className="text-sm font-medium">
+                {key === 'chosenDiocese' && value ? (
+                  <Badge variant="secondary">{String(value)}</Badge>
+                ) : value !== undefined && value !== null && value !== '' ? (
+                  String(value)
+                ) : (
+                  <span className="text-gray-300">-</span>
+                )}
+              </span>
+            </div>
+          );
+        })}
+        {member.profile && (
+          <div className="flex items-start px-6 py-3">
+            <span className="w-32 text-sm text-gray-500 shrink-0">프로필 이미지</span>
+            <img src={member.profile} alt="프로필" className="h-24 w-24 rounded-md object-cover" />
           </div>
-        </div>
-
-        <div className="rounded-lg border bg-white divide-y">
-          {FIELD_LABELS.map(({ key, label }) => {
-            const value = member[key as keyof typeof member];
-            return (
-              <div key={key} className="flex items-center px-6 py-3">
-                <span className="w-32 text-sm text-gray-500 shrink-0">{label}</span>
-                <span className="text-sm font-medium">
-                  {key === 'chosenDiocese' && value ? (
-                    <Badge variant="secondary">{String(value)}</Badge>
-                  ) : value !== undefined && value !== null && value !== '' ? (
-                    String(value)
-                  ) : (
-                    <span className="text-gray-300">-</span>
-                  )}
-                </span>
-              </div>
-            );
-          })}
-          {member.profile && (
-            <div className="flex items-start px-6 py-3">
-              <span className="w-32 text-sm text-gray-500 shrink-0">프로필 이미지</span>
-              <img src={member.profile} alt="프로필" className="h-24 w-24 rounded-md object-cover" />
-            </div>
-          )}
-          {member.qr && (
-            <div className="flex items-start px-6 py-3">
-              <span className="w-32 text-sm text-gray-500 shrink-0">QR 코드</span>
-              <img src={member.qr} alt="QR" className="h-24 w-24 object-contain" />
-            </div>
-          )}
-        </div>
-
-        <MemberQr memberId={id} printTargetId="print-qr-canvas" />
+        )}
+        {member.qr && (
+          <div className="flex items-start px-6 py-3">
+            <span className="w-32 text-sm text-gray-500 shrink-0">QR 코드</span>
+            <img src={member.qr} alt="QR" className="h-24 w-24 object-contain" />
+          </div>
+        )}
       </div>
-    </>
+
+      <MemberQr memberId={id} />
+    </div>
   );
 }

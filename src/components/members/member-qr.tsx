@@ -6,14 +6,12 @@ import { Button } from '@/components/ui/button';
 
 interface MemberQrProps {
   memberId: string;
-  printTargetId?: string;
 }
 
 const FRONT_URL = process.env.NEXT_PUBLIC_FRONT_URL || 'http://localhost:3003';
 
-export function MemberQr({ memberId, printTargetId }: MemberQrProps) {
+export function MemberQr({ memberId }: MemberQrProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const printCanvasRef = useRef<HTMLCanvasElement>(null);
   const [url] = useState(`${FRONT_URL}/?id=${memberId}`);
 
   useEffect(() => {
@@ -24,21 +22,6 @@ export function MemberQr({ memberId, printTargetId }: MemberQrProps) {
       color: { dark: '#18181b', light: '#ffffff' },
     });
   }, [url]);
-
-  useEffect(() => {
-    if (!printTargetId) return;
-    const target = document.getElementById(printTargetId);
-    if (!target) return;
-    const canvas = document.createElement('canvas');
-    target.appendChild(canvas);
-    printCanvasRef.current = canvas;
-    QRCode.toCanvas(canvas, url, {
-      width: 120,
-      margin: 2,
-      color: { dark: '#18181b', light: '#ffffff' },
-    });
-    return () => { target.innerHTML = ''; };
-  }, [url, printTargetId]);
 
   function handleDownload() {
     const canvas = canvasRef.current;
