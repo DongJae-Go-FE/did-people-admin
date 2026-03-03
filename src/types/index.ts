@@ -3,6 +3,7 @@ export interface User {
   email: string;
   role: 'admin' | 'manager';
   region?: string;
+  nave?: string;
 }
 
 export interface Member {
@@ -42,6 +43,38 @@ export interface MemberQuery {
   cathedral?: string;
   chosenDiocese?: string;
   region?: string;
+}
+
+export interface Churchgoer {
+  id: string;
+  name?: string;
+  baptismalName?: string;
+  phone?: string;
+  address?: string;
+  parish?: string;
+  breakfastAvailable?: boolean;
+  lunchAvailable?: boolean;
+  dinnerAvailable?: boolean;
+  homestayAvailable?: boolean;
+  mealOnlyAvailable?: boolean;
+  homestayDates?: string;
+  availableRooms?: number;
+  maxCapacity?: number;
+  notes?: string;
+  createdAt?: string;
+}
+
+export interface ChurchgoerListResponse {
+  data: Churchgoer[];
+  meta: MemberListMeta;
+}
+
+export interface ChurchgoerQuery {
+  pageIndex?: number;
+  pageSize?: number;
+  name?: string;
+  parish?: string;
+  homestayAvailable?: string;
 }
 
 export interface AuthTokens {

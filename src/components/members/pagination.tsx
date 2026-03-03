@@ -10,7 +10,7 @@ interface PaginationProps {
   onPageChange: (pageIndex: number) => void;
 }
 
-export function Pagination({ pageIndex, totalCount, pageSize, totalPages, onPageChange }: PaginationProps) {
+export function Pagination({ pageIndex, totalCount, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const start = Math.max(0, pageIndex - 2);

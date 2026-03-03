@@ -1,5 +1,13 @@
 import { clearUser } from './auth';
-import type { LoginResponse, Member, MemberListResponse, MemberQuery } from '@/types';
+import type {
+  Churchgoer,
+  ChurchgoerListResponse,
+  ChurchgoerQuery,
+  LoginResponse,
+  Member,
+  MemberListResponse,
+  MemberQuery,
+} from '@/types';
 
 let isRefreshing = false;
 let refreshSubscribers: Array<() => void> = [];
@@ -121,6 +129,53 @@ export async function updateMember(id: string, data: Partial<Member>): Promise<M
 export async function deleteMember(id: string): Promise<void> {
   const res = await fetchWithAuth(`/members/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('멤버 삭제에 실패했습니다.');
+}
+
+// Churchgoers API
+export async function getChurchgoers(query: ChurchgoerQuery = {}): Promise<ChurchgoerListResponse> {
+  const params = new URLSearchParams();
+  Object.entries(query).forEach(([k, v]) => {
+    if (v !== undefined && v !== '') params.append(k, String(v));
+  });
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  const res = await fetchWithAuth(`/churchgoers${qs}`);
+  if (!res.ok) throw new Error('본당 인원 목록을 불러오지 못했습니다.');
+  return res.json();
+}
+
+export async function getChurchgoer(id: string): Promise<Churchgoer> {
+  const res = await fetchWithAuth(`/churchgoers/${id}`);
+  if (!res.ok) throw new Error('본당 인원을 불러오지 못했습니다.');
+  return res.json();
+}
+
+export async function createChurchgoer(data: Partial<Churchgoer>): Promise<Churchgoer> {
+  const res = await fetchWithAuth('/churchgoers', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || '본당 인원 등록에 실패했습니다.');
+  }
+  return res.json();
+}
+
+export async function updateChurchgoer(id: string, data: Partial<Churchgoer>): Promise<Churchgoer> {
+  const res = await fetchWithAuth(`/churchgoers/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || '본당 인원 수정에 실패했습니다.');
+  }
+  return res.json();
+}
+
+export async function deleteChurchgoer(id: string): Promise<void> {
+  const res = await fetchWithAuth(`/churchgoers/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('본당 인원 삭제에 실패했습니다.');
 }
 
 export async function exportMembersExcel(filters: MemberQuery = {}): Promise<void> {

@@ -11,7 +11,9 @@ export function Sidebar() {
   const router = useRouter();
   const { user, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    requestAnimationFrame(() => setMounted(true));
+  }, []);
 
   async function handleLogout() {
     await logout();
@@ -20,6 +22,7 @@ export function Sidebar() {
 
   const navItems = [
     { href: '/members', label: '멤버 관리' },
+    { href: '/churchgoers', label: '본당 인원 관리' },
   ];
 
   return (
