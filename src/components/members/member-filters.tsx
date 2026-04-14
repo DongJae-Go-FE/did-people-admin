@@ -55,10 +55,9 @@ function MemberFiltersInner({
   const [chosenDiocese, setChosenDiocese] = useState(
     initialValues.chosenDiocese ?? "",
   );
-  const [region, setRegion] = useState(initialValues.region ?? "");
 
   function handleSearch() {
-    onSearch({ name, parish, cathedral, chosenDiocese, region });
+    onSearch({ name, parish, cathedral, chosenDiocese });
   }
 
   return (
@@ -77,19 +76,21 @@ function MemberFiltersInner({
             className="h-8 text-sm"
           />
         </div>
-        <div className="space-y-1">
-          <Label htmlFor="filter-parish" className="text-xs">
-            본당
-          </Label>
-          <Input
-            id="filter-parish"
-            value={parish}
-            onChange={(e) => setParish(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="본당 검색"
-            className="h-8 text-sm"
-          />
-        </div>
+        {isAdmin && (
+          <div className="space-y-1">
+            <Label htmlFor="filter-parish" className="text-xs">
+              본당
+            </Label>
+            <Input
+              id="filter-parish"
+              value={parish}
+              onChange={(e) => setParish(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="본당 검색"
+              className="h-8 text-sm"
+            />
+          </div>
+        )}
         <div className="space-y-1">
           <Label htmlFor="filter-cathedral" className="text-xs">
             성당
@@ -116,21 +117,6 @@ function MemberFiltersInner({
             className="h-8 text-sm"
           />
         </div>
-        {isAdmin && (
-          <div className="space-y-1">
-            <Label htmlFor="filter-region" className="text-xs">
-              지역
-            </Label>
-            <Input
-              id="filter-region"
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              placeholder="지역 검색"
-              className="h-8 text-sm"
-            />
-          </div>
-        )}
       </div>
       <div className="flex gap-2">
         <Button size="sm" onClick={handleSearch}>

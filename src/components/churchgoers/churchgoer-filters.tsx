@@ -21,17 +21,14 @@ export function ChurchgoerFilters({ onSearch, initialValues = {} }: ChurchgoerFi
 
   const [name, setName] = useState(initialValues.name ?? '');
   const [parish, setParish] = useState(initialValues.parish ?? '');
-  const [homestayAvailable, setHomestayAvailable] = useState(initialValues.homestayAvailable ?? '');
 
   useEffect(() => {
     setName(initialValues.name ?? '');
     setParish(initialValues.parish ?? '');
-    setHomestayAvailable(initialValues.homestayAvailable ?? '');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialValues.name, initialValues.parish, initialValues.homestayAvailable]);
+  }, [initialValues.name, initialValues.parish]);
 
   function handleSearch() {
-    onSearch({ name, parish, homestayAvailable });
+    onSearch({ name, parish });
   }
 
   function handleReset() {
@@ -65,19 +62,6 @@ export function ChurchgoerFilters({ onSearch, initialValues = {} }: ChurchgoerFi
             />
           </div>
         )}
-        <div className="space-y-1">
-          <Label htmlFor="filter-homestay" className="text-xs">홈스테이 가능</Label>
-          <select
-            id="filter-homestay"
-            value={homestayAvailable}
-            onChange={(e) => setHomestayAvailable(e.target.value)}
-            className="flex h-8 w-full rounded-md border border-input bg-background px-3 text-sm"
-          >
-            <option value="">전체</option>
-            <option value="true">가능</option>
-            <option value="false">불가</option>
-          </select>
-        </div>
       </div>
       <div className="flex gap-2">
         <Button size="sm" onClick={handleSearch}>검색</Button>
