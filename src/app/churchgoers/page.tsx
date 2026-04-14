@@ -24,7 +24,6 @@ function ChurchgoersContent() {
   const filters: ChurchgoerQuery = {
     name: searchParams.get('name') ?? undefined,
     parish: searchParams.get('parish') ?? undefined,
-    homestayAvailable: searchParams.get('homestayAvailable') ?? undefined,
   };
 
   function buildParams(overrides: Partial<ChurchgoerQuery & { pageIndex: number }>) {
@@ -79,9 +78,9 @@ function ChurchgoersContent() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">본당 인원 관리</h1>
+        <h1 className="text-2xl font-bold">본당 홈스테이 봉사자 관리</h1>
         <Button asChild>
-          <Link href="/churchgoers/new">+ 본당 인원 등록</Link>
+          <Link href="/churchgoers/new">+ 봉사자 등록</Link>
         </Button>
       </div>
 
@@ -103,7 +102,7 @@ function ChurchgoersContent() {
           <Spinner size="lg" />
         </div>
       ) : !data?.data.length ? (
-        <Empty message={hasFilters ? '검색 결과가 없습니다.' : '등록된 본당 인원이 없습니다.'} />
+        <Empty message={hasFilters ? '검색 결과가 없습니다.' : '등록된 봉사자가 없습니다.'} />
       ) : (
         <ChurchgoerTable
           churchgoers={data.data}

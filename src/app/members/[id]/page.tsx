@@ -42,7 +42,7 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">멤버 상세</h1>
+          <h1 className="text-2xl font-bold">참여인원 상세</h1>
           <div className="flex gap-2">
             {error && <Button variant="outline" onClick={() => refetch()}>새로고침</Button>}
             <Button variant="outline" asChild>
@@ -50,7 +50,7 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
             </Button>
           </div>
         </div>
-        <Empty message={error instanceof Error ? error.message : '멤버를 찾을 수 없습니다.'} />
+        <Empty message={error instanceof Error ? error.message : '참여인원을 찾을 수 없습니다.'} />
       </div>
     );
   }
@@ -99,7 +99,7 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">멤버 상세</h1>
+        <h1 className="text-2xl font-bold">참여인원 상세</h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handlePrint}>인쇄</Button>
           <Button variant="outline" asChild>
@@ -144,6 +144,33 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
       </div>
 
       <MemberQr memberId={id} />
+
+      {/* 배정된 홈스테이 봉사자 */}
+      <div className="rounded-lg border bg-white">
+        <div className="border-b px-6 py-3">
+          <h2 className="text-sm font-semibold text-gray-700">배정된 홈스테이 봉사자</h2>
+        </div>
+        {member.assignedChurchgoer ? (
+          <div className="divide-y">
+            <div className="flex items-center px-6 py-3">
+              <span className="w-32 text-sm text-gray-500 shrink-0">봉사자명</span>
+              <Link href={`/churchgoers/${member.assignedChurchgoer.id}`} className="text-sm font-medium text-blue-600 hover:underline">
+                {member.assignedChurchgoer.name ?? '-'}
+              </Link>
+            </div>
+            <div className="flex items-center px-6 py-3">
+              <span className="w-32 text-sm text-gray-500 shrink-0">본당</span>
+              <span className="text-sm font-medium">{member.assignedChurchgoer.parish ?? '-'}</span>
+            </div>
+            <div className="flex items-center px-6 py-3">
+              <span className="w-32 text-sm text-gray-500 shrink-0">주소</span>
+              <span className="text-sm font-medium">{member.assignedChurchgoer.address ?? '-'}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="px-6 py-8 text-center text-sm text-gray-400">배정된 봉사자가 없습니다.</div>
+        )}
+      </div>
     </div>
   );
 }

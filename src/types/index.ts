@@ -21,6 +21,7 @@ export interface Member {
   region?: string;
   createdAt?: string;
   updatedAt?: string;
+  assignedChurchgoer?: { id: number; name?: string; parish?: string; address?: string } | null;
 }
 
 export interface MemberListMeta {
@@ -42,7 +43,6 @@ export interface MemberQuery {
   parish?: string;
   cathedral?: string;
   chosenDiocese?: string;
-  region?: string;
 }
 
 export interface Churchgoer {
@@ -52,16 +52,43 @@ export interface Churchgoer {
   phone?: string;
   address?: string;
   parish?: string;
+  district?: string;
+  ban?: string;
+  familyType?: string;
+  childrenCount?: number;
+  familyTypeOther?: string;
+  housingType?: string;
+  housingTypeOther?: string;
+  pilgrimGender?: string;
+  clergyAcceptable?: boolean;
+  bedroomType?: string;
+  bedCount?: number;
+  futonCount?: number;
+  bathroomType?: string;
+  hasPet?: boolean;
+  petType?: string;
+  petLocation?: string;
+  hasWifi?: boolean;
+  hasWasher?: boolean;
+  smokingPolicy?: string;
+  transportationType?: string;
   breakfastAvailable?: boolean;
-  lunchAvailable?: boolean;
   dinnerAvailable?: boolean;
-  homestayAvailable?: boolean;
-  mealOnlyAvailable?: boolean;
-  homestayDates?: string;
   availableRooms?: number;
   maxCapacity?: number;
   notes?: string;
   createdAt?: string;
+  assignedMemberCount?: number;
+  assignedMembers?: AssignedMemberSummary[];
+}
+
+export interface AssignedMemberSummary {
+  id: number;
+  name?: string;
+  age?: number;
+  nation?: string;
+  parish?: string;
+  phone?: string;
 }
 
 export interface ChurchgoerListResponse {
@@ -74,7 +101,6 @@ export interface ChurchgoerQuery {
   pageSize?: number;
   name?: string;
   parish?: string;
-  homestayAvailable?: string;
 }
 
 export interface AuthTokens {

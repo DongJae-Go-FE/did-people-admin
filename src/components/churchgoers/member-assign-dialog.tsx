@@ -1,0 +1,132 @@
+'use client';
+
+import { useState, useMemo } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getMembers, assignMembers } from '@/lib/api';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
+
+interface MemberAssignDialogProps {
+  churchgoerId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function MemberAssignDialog({ churchgoerId, open, onOpenChange }: MemberAssignDialogProps) {
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['members', 'all-for-assign'],
+    queryFn: () => getMembers({ pageSize: 9999 }),
+    enabled: open,
+  });
+
+  const unassigned = useMemo(() => {
+    if (!data?.data) return [];
+    return data.data.filter((m) => !m.assignedChurchgoer);
+  }, [data]);
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return unassigned;
+    const q = search.trim().toLowerCase();
+    return unassigned.filter(
+      (m) =>
+        m.name?.toLowerCase().includes(q) ||
+        m.parish?.toLowerCase().includes(q) ||
+        m.nation?.toLowerCase().includes(q),
+    );
+  }, [unassigned, search]);
+
+  const mutation = useMutation({
+    mutationFn: () => assignMembers(churchgoerId, Array.from(selected)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['churchgoer', churchgoerId] });
+      queryClient.invalidateQueries({ queryKey: ['churchgoers'] });
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+      setSelected(new Set());
+      setSearch('');
+      onOpenChange(false);
+    },
+  });
+
+  function toggle(id: number) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>참여인원 배정</DialogTitle>
+          <DialogDescription>배정할 참여인원을 선택하세요.</DialogDescription>
+        </DialogHeader>
+
+        <Input
+          placeholder="이름, 본당, 국적 검색..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <div className="flex-1 overflow-y-auto border rounded-md min-h-0 max-h-64">
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Spinner size="md" />
+            </div>
+          ) : filtered.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">미배정 참여인원이 없습니다.</p>
+          ) : (
+            <ul className="divide-y">
+              {filtered.map((m) => {
+                const id = Number(m.id);
+                return (
+                  <li key={m.id} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 cursor-pointer" onClick={() => toggle(id)}>
+                    <input
+                      type="checkbox"
+                      checked={selected.has(id)}
+                      onChange={() => toggle(id)}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{m.name ?? '-'}</p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {[m.nation, m.parish].filter(Boolean).join(' · ') || '-'}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            취소
+          </Button>
+          <Button
+            disabled={selected.size === 0 || mutation.isPending}
+            onClick={() => mutation.mutate()}
+          >
+            {mutation.isPending ? <Spinner size="sm" className="border-white border-t-transparent" /> : `배정 (${selected.size}명)`}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

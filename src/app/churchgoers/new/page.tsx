@@ -15,7 +15,7 @@ export default function NewChurchgoerPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">본당 인원 등록</h1>
+      <h1 className="text-2xl font-bold">봉사자 등록</h1>
       <ChurchgoerForm mode="create" onSubmit={handleSubmit} />
     </div>
   );

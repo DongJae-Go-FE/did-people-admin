@@ -27,7 +27,6 @@ function MembersContent() {
     parish: searchParams.get('parish') ?? undefined,
     cathedral: searchParams.get('cathedral') ?? undefined,
     chosenDiocese: searchParams.get('chosenDiocese') ?? undefined,
-    region: searchParams.get('region') ?? undefined,
   };
 
   function buildParams(overrides: Partial<MemberQuery & { pageIndex: number }>) {
@@ -94,13 +93,13 @@ function MembersContent() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">멤버 관리</h1>
+        <h1 className="text-2xl font-bold">본당 DID 참여인원 관리</h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExport} disabled={isExporting}>
             {isExporting ? '생성 중...' : 'Excel 내보내기'}
           </Button>
           <Button asChild>
-            <Link href="/members/new">+ 멤버 등록</Link>
+            <Link href="/members/new">+ 참여인원 등록</Link>
           </Button>
         </div>
       </div>
@@ -123,7 +122,7 @@ function MembersContent() {
           <Spinner size="lg" />
         </div>
       ) : !data?.data.length ? (
-        <Empty message={hasFilters ? '검색 결과가 없습니다.' : '등록된 멤버가 없습니다.'} />
+        <Empty message={hasFilters ? '검색 결과가 없습니다.' : '등록된 참여인원이 없습니다.'} />
       ) : (
         <MemberTable
           members={data.data}

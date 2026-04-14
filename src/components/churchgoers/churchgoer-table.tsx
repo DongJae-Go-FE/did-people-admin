@@ -31,7 +31,7 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function handleDelete(id: string, name?: string) {
-    if (!confirm(`"${name ?? id}" 본당 인원을 삭제하시겠습니까?`)) return;
+    if (!confirm(`"${name ?? id}" 봉사자를 삭제하시겠습니까?`)) return;
     setDeletingId(id);
     try {
       await onDelete(id);
@@ -48,11 +48,12 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
             <TableHead>이름</TableHead>
             <TableHead>세례명</TableHead>
             <TableHead>본당</TableHead>
+            <TableHead>구역/반</TableHead>
+            <TableHead>주소</TableHead>
             <TableHead>연락처</TableHead>
             <TableHead className="text-center">아침</TableHead>
-            <TableHead className="text-center">점심</TableHead>
             <TableHead className="text-center">저녁</TableHead>
-            <TableHead className="text-center">홈스테이</TableHead>
+            <TableHead className="text-center">배정 인원</TableHead>
             <TableHead className="text-center">수용 인원</TableHead>
             <TableHead className="w-28">관리</TableHead>
           </TableRow>
@@ -67,11 +68,16 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
               </TableCell>
               <TableCell>{cg.baptismalName ?? '-'}</TableCell>
               <TableCell>{cg.parish ?? '-'}</TableCell>
+              <TableCell className="text-xs">
+                {[cg.district, cg.ban].filter(Boolean).join(' / ') || '-'}
+              </TableCell>
+              <TableCell className="text-xs max-w-40 truncate">{cg.address ?? '-'}</TableCell>
               <TableCell className="text-xs">{cg.phone ?? '-'}</TableCell>
               <TableCell className="text-center"><BoolIcon value={cg.breakfastAvailable} /></TableCell>
-              <TableCell className="text-center"><BoolIcon value={cg.lunchAvailable} /></TableCell>
               <TableCell className="text-center"><BoolIcon value={cg.dinnerAvailable} /></TableCell>
-              <TableCell className="text-center"><BoolIcon value={cg.homestayAvailable} /></TableCell>
+              <TableCell className="text-center">
+                {cg.assignedMemberCount ?? 0} / {cg.maxCapacity ?? '-'}
+              </TableCell>
               <TableCell className="text-center">{cg.maxCapacity ?? '-'}</TableCell>
               <TableCell>
                 <div className="flex gap-1">

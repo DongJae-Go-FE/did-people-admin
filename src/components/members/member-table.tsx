@@ -24,7 +24,7 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function handleDelete(id: string, name: string) {
-    if (!confirm(`"${name}" 멤버를 삭제하시겠습니까?`)) return;
+    if (!confirm(`"${name}" 참여인원을 삭제하시겠습니까?`)) return;
     setDeletingId(id);
     try {
       await onDelete(id);
@@ -46,6 +46,7 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
             <TableHead>선택 교구</TableHead>
             <TableHead>지역</TableHead>
             <TableHead>연락처</TableHead>
+            <TableHead>배정 봉사자</TableHead>
             <TableHead className="w-28">관리</TableHead>
           </TableRow>
         </TableHeader>
@@ -68,6 +69,16 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
               </TableCell>
               <TableCell>{member.region ?? '-'}</TableCell>
               <TableCell className="text-xs">{member.phone ?? '-'}</TableCell>
+              <TableCell className="text-xs">
+                {member.assignedChurchgoer ? (
+                  <Link href={`/churchgoers/${member.assignedChurchgoer.id}`} className="hover:underline text-blue-600">
+                    {member.assignedChurchgoer.name ?? '-'}
+                    {member.assignedChurchgoer.parish ? `(${member.assignedChurchgoer.parish})` : ''}
+                  </Link>
+                ) : (
+                  <span className="text-gray-400">미배정</span>
+                )}
+              </TableCell>
               <TableCell>
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm" asChild>

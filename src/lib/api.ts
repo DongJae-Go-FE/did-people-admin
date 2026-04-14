@@ -1,5 +1,6 @@
 import { clearUser } from './auth';
 import type {
+  AssignedMemberSummary,
   Churchgoer,
   ChurchgoerListResponse,
   ChurchgoerQuery,
@@ -139,13 +140,13 @@ export async function getChurchgoers(query: ChurchgoerQuery = {}): Promise<Churc
   });
   const qs = params.toString() ? `?${params.toString()}` : '';
   const res = await fetchWithAuth(`/churchgoers${qs}`);
-  if (!res.ok) throw new Error('본당 인원 목록을 불러오지 못했습니다.');
+  if (!res.ok) throw new Error('봉사자 목록을 불러오지 못했습니다.');
   return res.json();
 }
 
 export async function getChurchgoer(id: string): Promise<Churchgoer> {
   const res = await fetchWithAuth(`/churchgoers/${id}`);
-  if (!res.ok) throw new Error('본당 인원을 불러오지 못했습니다.');
+  if (!res.ok) throw new Error('봉사자를 불러오지 못했습니다.');
   return res.json();
 }
 
@@ -156,7 +157,7 @@ export async function createChurchgoer(data: Partial<Churchgoer>): Promise<Churc
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || '본당 인원 등록에 실패했습니다.');
+    throw new Error(err.message || '봉사자 등록에 실패했습니다.');
   }
   return res.json();
 }
@@ -168,14 +169,40 @@ export async function updateChurchgoer(id: string, data: Partial<Churchgoer>): P
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || '본당 인원 수정에 실패했습니다.');
+    throw new Error(err.message || '봉사자 수정에 실패했습니다.');
   }
   return res.json();
 }
 
 export async function deleteChurchgoer(id: string): Promise<void> {
   const res = await fetchWithAuth(`/churchgoers/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('본당 인원 삭제에 실패했습니다.');
+  if (!res.ok) throw new Error('봉사자 삭제에 실패했습니다.');
+}
+
+// Assignment API
+export async function assignMembers(churchgoerId: string, memberIds: number[]): Promise<Churchgoer> {
+  const res = await fetchWithAuth(`/churchgoers/${churchgoerId}/assignments`, {
+    method: 'POST',
+    body: JSON.stringify({ memberIds }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || '배정에 실패했습니다.');
+  }
+  return res.json();
+}
+
+export async function unassignMember(churchgoerId: string, memberId: number): Promise<void> {
+  const res = await fetchWithAuth(`/churchgoers/${churchgoerId}/assignments/${memberId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('배정 해제에 실패했습니다.');
+}
+
+export async function getAssignedMembers(churchgoerId: string): Promise<AssignedMemberSummary[]> {
+  const res = await fetchWithAuth(`/churchgoers/${churchgoerId}/assignments`);
+  if (!res.ok) throw new Error('배정 멤버 목록을 불러오지 못했습니다.');
+  return res.json();
 }
 
 export async function exportMembersExcel(filters: MemberQuery = {}): Promise<void> {

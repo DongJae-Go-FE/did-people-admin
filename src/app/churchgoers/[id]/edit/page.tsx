@@ -32,7 +32,7 @@ export default function EditChurchgoerPage({ params }: EditPageProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold">본당 인원 수정</h1>
+        <h1 className="text-2xl font-bold">봉사자 수정</h1>
         <div className="flex justify-center py-16">
           <Spinner size="lg" />
         </div>
@@ -44,7 +44,7 @@ export default function EditChurchgoerPage({ params }: EditPageProps) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">본당 인원 수정</h1>
+          <h1 className="text-2xl font-bold">봉사자 수정</h1>
           <div className="flex gap-2">
             {error && <Button variant="outline" onClick={() => refetch()}>새로고침</Button>}
             <Button variant="outline" asChild>
@@ -59,7 +59,7 @@ export default function EditChurchgoerPage({ params }: EditPageProps) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">본당 인원 수정</h1>
+      <h1 className="text-2xl font-bold">봉사자 수정</h1>
       <ChurchgoerForm mode="edit" initialData={cg} onSubmit={handleSubmit} />
     </div>
   );

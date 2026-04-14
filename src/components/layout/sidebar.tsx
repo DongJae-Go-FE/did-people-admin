@@ -21,8 +21,8 @@ export function Sidebar() {
   }
 
   const navItems = [
-    { href: '/members', label: '멤버 관리' },
-    { href: '/churchgoers', label: '본당 인원 관리' },
+    { href: '/members', label: '본당 DID 참여인원 관리' },
+    { href: '/churchgoers', label: '본당 홈스테이 봉사자 관리' },
   ];
 
   return (
