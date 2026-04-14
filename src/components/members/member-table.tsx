@@ -41,10 +41,11 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
             <TableHead>이름</TableHead>
             <TableHead>나이</TableHead>
             <TableHead>국적</TableHead>
-            <TableHead>본당</TableHead>
-            <TableHead>성당</TableHead>
+            <TableHead>소속 본당</TableHead>
+            <TableHead>소속 교구</TableHead>
+            <TableHead>배정 성당</TableHead>
             <TableHead>선택 교구</TableHead>
-            <TableHead>지역</TableHead>
+            <TableHead>배정된 지역</TableHead>
             <TableHead>연락처</TableHead>
             <TableHead>배정 봉사자</TableHead>
             <TableHead className="w-28">관리</TableHead>
@@ -61,6 +62,7 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
               <TableCell>{member.age ?? '-'}</TableCell>
               <TableCell>{member.nation ?? '-'}</TableCell>
               <TableCell>{member.parish ?? '-'}</TableCell>
+              <TableCell>{member.diocese ?? '-'}</TableCell>
               <TableCell>{member.cathedral ?? '-'}</TableCell>
               <TableCell>
                 {member.chosenDiocese ? (

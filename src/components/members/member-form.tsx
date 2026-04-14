@@ -20,6 +20,7 @@ interface FormState {
   age: string;
   nation: string;
   parish: string;
+  diocese: string;
   cathedral: string;
   phone: string;
   emergencyNum: string;
@@ -36,6 +37,7 @@ export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
     age: initialData?.age?.toString() ?? '',
     nation: initialData?.nation ?? '',
     parish: initialData?.parish ?? '',
+    diocese: initialData?.diocese ?? '',
     cathedral: initialData?.cathedral ?? '',
     phone: initialData?.phone ?? '',
     emergencyNum: initialData?.emergencyNum ?? '',
@@ -58,6 +60,7 @@ export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
       name: form.name,
       nation: form.nation || undefined,
       parish: form.parish || undefined,
+      diocese: form.diocese || undefined,
       cathedral: form.cathedral || undefined,
       phone: form.phone || undefined,
       emergencyNum: form.emergencyNum || undefined,
@@ -80,12 +83,13 @@ export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
     { key: 'name', label: '이름', required: true },
     { key: 'age', label: '나이', type: 'number' },
     { key: 'nation', label: '국적' },
-    { key: 'parish', label: '본당' },
-    { key: 'cathedral', label: '성당' },
+    { key: 'parish', label: '소속 본당' },
+    { key: 'diocese', label: '소속 교구' },
+    { key: 'cathedral', label: '배정 성당' },
     { key: 'phone', label: '연락처', type: 'tel' },
     { key: 'emergencyNum', label: '비상 연락처', type: 'tel' },
     { key: 'chosenDiocese', label: '선택 교구' },
-    { key: 'region', label: '지역' },
+    { key: 'region', label: '배정된 지역' },
   ];
 
   return (

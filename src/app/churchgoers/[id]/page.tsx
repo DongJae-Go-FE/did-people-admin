@@ -251,7 +251,7 @@ export default function ChurchgoerDetailPage({ params }: DetailPageProps) {
         )}
       </div>
 
-      <MemberAssignDialog churchgoerId={id} open={assignOpen} onOpenChange={setAssignOpen} />
+      <MemberAssignDialog churchgoerId={id} churchgoer={cg} open={assignOpen} onOpenChange={setAssignOpen} />
     </div>
   );
 }

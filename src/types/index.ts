@@ -17,6 +17,7 @@ export interface Member {
   emergencyNum?: string;
   profile?: string;
   qr?: string;
+  diocese?: string;
   chosenDiocese?: string;
   region?: string;
   createdAt?: string;
@@ -42,6 +43,7 @@ export interface MemberQuery {
   name?: string;
   parish?: string;
   cathedral?: string;
+  diocese?: string;
   chosenDiocese?: string;
 }
 

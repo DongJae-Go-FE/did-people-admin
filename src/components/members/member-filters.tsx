@@ -51,22 +51,21 @@ function MemberFiltersInner({
 }: InnerProps) {
   const [name, setName] = useState(initialValues.name ?? "");
   const [parish, setParish] = useState(initialValues.parish ?? "");
+  const [diocese, setDiocese] = useState(initialValues.diocese ?? "");
   const [cathedral, setCathedral] = useState(initialValues.cathedral ?? "");
   const [chosenDiocese, setChosenDiocese] = useState(
     initialValues.chosenDiocese ?? "",
   );
 
   function handleSearch() {
-    onSearch({ name, parish, cathedral, chosenDiocese });
+    onSearch({ name, parish, diocese, cathedral, chosenDiocese });
   }
 
   return (
     <div className="rounded-lg border bg-white p-4 space-y-4">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <div className="space-y-1">
-          <Label htmlFor="filter-name" className="text-xs">
-            이름
-          </Label>
+          <Label htmlFor="filter-name" className="text-xs">이름</Label>
           <Input
             id="filter-name"
             value={name}
@@ -78,9 +77,7 @@ function MemberFiltersInner({
         </div>
         {isAdmin && (
           <div className="space-y-1">
-            <Label htmlFor="filter-parish" className="text-xs">
-              본당
-            </Label>
+            <Label htmlFor="filter-parish" className="text-xs">소속 본당</Label>
             <Input
               id="filter-parish"
               value={parish}
@@ -92,9 +89,18 @@ function MemberFiltersInner({
           </div>
         )}
         <div className="space-y-1">
-          <Label htmlFor="filter-cathedral" className="text-xs">
-            성당
-          </Label>
+          <Label htmlFor="filter-diocese" className="text-xs">소속 교구</Label>
+          <Input
+            id="filter-diocese"
+            value={diocese}
+            onChange={(e) => setDiocese(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            placeholder="교구 검색"
+            className="h-8 text-sm"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="filter-cathedral" className="text-xs">배정 성당</Label>
           <Input
             id="filter-cathedral"
             value={cathedral}
@@ -105,15 +111,13 @@ function MemberFiltersInner({
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="filter-diocese" className="text-xs">
-            선택 교구
-          </Label>
+          <Label htmlFor="filter-chosen-diocese" className="text-xs">선택 교구</Label>
           <Input
-            id="filter-diocese"
+            id="filter-chosen-diocese"
             value={chosenDiocese}
             onChange={(e) => setChosenDiocese(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="교구 검색"
+            placeholder="선택 교구 검색"
             className="h-8 text-sm"
           />
         </div>
