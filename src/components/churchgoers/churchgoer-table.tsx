@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 import type { Churchgoer } from '@/types';
 
 interface ChurchgoerTableProps {
@@ -29,6 +30,8 @@ function BoolIcon({ value }: { value?: boolean }) {
 
 export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const region = useCurrentRegion();
+  const base = region ? `/${region}` : '';
 
   async function handleDelete(id: string, name?: string) {
     if (!confirm(`"${name ?? id}" 봉사자를 삭제하시겠습니까?`)) return;
@@ -62,7 +65,7 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
           {churchgoers.map((cg) => (
             <TableRow key={cg.id}>
               <TableCell className="font-medium">
-                <Link href={`/churchgoers/${cg.id}`} className="hover:underline">
+                <Link href={`${base}/churchgoers/${cg.id}`} className="hover:underline">
                   {cg.name ?? '-'}
                 </Link>
               </TableCell>
@@ -82,7 +85,7 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
               <TableCell>
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/churchgoers/${cg.id}/edit`}>수정</Link>
+                    <Link href={`${base}/churchgoers/${cg.id}/edit`}>수정</Link>
                   </Button>
                   <Button
                     variant="destructive"

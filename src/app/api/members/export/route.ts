@@ -13,7 +13,6 @@ const HEADERS = [
   { key: 'parish', label: '소속 본당' },
   { key: 'diocese', label: '소속 교구' },
   { key: 'cathedral', label: '배정 성당' },
-  { key: 'chosenDiocese', label: '선택 교구' },
   { key: 'region', label: '배정된 지역' },
   { key: 'phone', label: '연락처' },
   { key: 'emergencyNum', label: '비상 연락처' },
@@ -53,9 +52,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: '인증이 필요합니다.' }, { status: 401 });
   }
 
-  // 필터 파라미터 (name, parish, cathedral, chosenDiocese, region)
+  // 필터 파라미터 (name, parish, cathedral, region)
   const filterParams = new URLSearchParams();
-  ['name', 'parish', 'cathedral', 'chosenDiocese', 'region'].forEach((key) => {
+  ['name', 'parish', 'cathedral', 'region'].forEach((key) => {
     const val = request.nextUrl.searchParams.get(key);
     if (val) filterParams.set(key, val);
   });

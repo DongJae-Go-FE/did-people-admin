@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Spinner } from '@/components/ui/spinner';
 import { Empty } from '@/components/ui/empty';
 import { MemberAssignDialog } from '@/components/churchgoers/member-assign-dialog';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 import {
   Table,
   TableBody,
@@ -44,6 +45,10 @@ function Field({ label, value }: { label: string; value?: string | number | null
 export default function ChurchgoerDetailPage({ params }: DetailPageProps) {
   const { id } = use(params);
   const queryClient = useQueryClient();
+  const region = useCurrentRegion();
+  const listHref = region ? `/${region}/churchgoers` : '/churchgoers';
+  const editHref = region ? `/${region}/churchgoers/${id}/edit` : `/churchgoers/${id}/edit`;
+  const memberBase = region ? `/${region}/members` : '/members';
   const [assignOpen, setAssignOpen] = useState(false);
 
   const { data: cg, isLoading, error, refetch } = useQuery({
@@ -76,7 +81,7 @@ export default function ChurchgoerDetailPage({ params }: DetailPageProps) {
           <div className="flex gap-2">
             {error && <Button variant="outline" onClick={() => refetch()}>새로고침</Button>}
             <Button variant="outline" asChild>
-              <Link href="/churchgoers">목록</Link>
+              <Link href={listHref}>목록</Link>
             </Button>
           </div>
         </div>
@@ -105,10 +110,10 @@ export default function ChurchgoerDetailPage({ params }: DetailPageProps) {
         <h1 className="text-2xl font-bold">봉사자 상세</h1>
         <div className="flex gap-2">
           <Button variant="outline" asChild>
-            <Link href="/churchgoers">목록</Link>
+            <Link href={listHref}>목록</Link>
           </Button>
           <Button asChild>
-            <Link href={`/churchgoers/${id}/edit`}>수정</Link>
+            <Link href={editHref}>수정</Link>
           </Button>
         </div>
       </div>
@@ -220,7 +225,7 @@ export default function ChurchgoerDetailPage({ params }: DetailPageProps) {
               {cg.assignedMembers.map((m) => (
                 <TableRow key={m.id}>
                   <TableCell className="font-medium">
-                    <Link href={`/members/${m.id}`} className="hover:underline">
+                    <Link href={`${memberBase}/${m.id}`} className="hover:underline">
                       {m.name ?? '-'}
                     </Link>
                   </TableCell>

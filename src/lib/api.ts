@@ -67,11 +67,15 @@ async function fetchWithAuth(
 }
 
 // Auth — Route Handler 경유 (HttpOnly 쿠키 Set-Cookie)
-export async function login(username: string, password: string): Promise<LoginResponse> {
+export async function login(
+  username: string,
+  password: string,
+  requiredRegion?: 'incheon' | 'jeju' | 'super',
+): Promise<LoginResponse> {
   const res = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, password, requiredRegion }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));

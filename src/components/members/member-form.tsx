@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 import type { Member } from '@/types';
 
 interface MemberFormProps {
@@ -24,12 +25,12 @@ interface FormState {
   cathedral: string;
   phone: string;
   emergencyNum: string;
-  chosenDiocese: string;
-  region: string;
 }
 
 export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
   const router = useRouter();
+  const region = useCurrentRegion();
+  const listHref = region ? `/${region}/members` : '/members';
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState<FormState>({
@@ -41,8 +42,6 @@ export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
     cathedral: initialData?.cathedral ?? '',
     phone: initialData?.phone ?? '',
     emergencyNum: initialData?.emergencyNum ?? '',
-    chosenDiocese: initialData?.chosenDiocese ?? '',
-    region: initialData?.region ?? '',
   });
 
   function handleChange(field: keyof FormState) {
@@ -64,14 +63,12 @@ export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
       cathedral: form.cathedral || undefined,
       phone: form.phone || undefined,
       emergencyNum: form.emergencyNum || undefined,
-      chosenDiocese: form.chosenDiocese || undefined,
-      region: form.region || undefined,
     };
     if (form.age) payload.age = Number(form.age);
 
     try {
       await onSubmit(payload);
-      router.push('/members');
+      router.push(listHref);
     } catch (err) {
       setError(err instanceof Error ? err.message : '저장에 실패했습니다.');
     } finally {
@@ -79,7 +76,7 @@ export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
     }
   }
 
-  const fields: Array<{ key: keyof FormState; label: string; type?: string; required?: boolean }> = [
+  const inputFields: Array<{ key: keyof FormState; label: string; type?: string; required?: boolean }> = [
     { key: 'name', label: '이름', required: true },
     { key: 'age', label: '나이', type: 'number' },
     { key: 'nation', label: '국적' },
@@ -88,8 +85,6 @@ export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
     { key: 'cathedral', label: '배정 성당' },
     { key: 'phone', label: '연락처', type: 'tel' },
     { key: 'emergencyNum', label: '비상 연락처', type: 'tel' },
-    { key: 'chosenDiocese', label: '선택 교구' },
-    { key: 'region', label: '배정된 지역' },
   ];
 
   return (
@@ -100,7 +95,7 @@ export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {fields.map(({ key, label, type = 'text', required }) => (
+            {inputFields.map(({ key, label, type = 'text', required }) => (
               <div key={key} className="space-y-1">
                 <Label htmlFor={`field-${key}`} className="text-sm">
                   {label}{required && <span className="text-red-500 ml-1">*</span>}
@@ -126,7 +121,7 @@ export function MemberForm({ initialData, onSubmit, mode }: MemberFormProps) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.push('/members')}
+              onClick={() => router.push(listHref)}
               disabled={loading}
             >
               취소

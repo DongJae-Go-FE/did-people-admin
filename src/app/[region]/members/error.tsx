@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -11,6 +12,8 @@ interface ErrorPageProps {
 
 export default function MembersError({ error, reset }: ErrorPageProps) {
   const router = useRouter();
+  const region = useCurrentRegion();
+  const listHref = region ? `/${region}/members` : '/members';
 
   useEffect(() => {
     console.error(error);
@@ -27,7 +30,7 @@ export default function MembersError({ error, reset }: ErrorPageProps) {
         <Button onClick={reset}>
           새로고침
         </Button>
-        <Button variant="outline" onClick={() => router.push('/members')}>
+        <Button variant="outline" onClick={() => router.push(listHref)}>
           목록으로
         </Button>
       </div>

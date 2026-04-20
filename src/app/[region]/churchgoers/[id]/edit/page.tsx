@@ -8,6 +8,7 @@ import { ChurchgoerForm } from '@/components/churchgoers/churchgoer-form';
 import { Spinner } from '@/components/ui/spinner';
 import { Empty } from '@/components/ui/empty';
 import { Button } from '@/components/ui/button';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 import type { Churchgoer } from '@/types';
 
 interface EditPageProps {
@@ -17,6 +18,8 @@ interface EditPageProps {
 export default function EditChurchgoerPage({ params }: EditPageProps) {
   const { id } = use(params);
   const queryClient = useQueryClient();
+  const region = useCurrentRegion();
+  const listHref = region ? `/${region}/churchgoers` : '/churchgoers';
 
   const { data: cg, isLoading, error, refetch } = useQuery({
     queryKey: ['churchgoer', id],
@@ -48,7 +51,7 @@ export default function EditChurchgoerPage({ params }: EditPageProps) {
           <div className="flex gap-2">
             {error && <Button variant="outline" onClick={() => refetch()}>새로고침</Button>}
             <Button variant="outline" asChild>
-              <Link href="/churchgoers">목록</Link>
+              <Link href={listHref}>목록</Link>
             </Button>
           </div>
         </div>

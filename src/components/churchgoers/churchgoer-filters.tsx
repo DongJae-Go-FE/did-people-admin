@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/auth-context';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 import type { ChurchgoerQuery } from '@/types';
 
 interface ChurchgoerFiltersProps {
@@ -16,6 +17,7 @@ interface ChurchgoerFiltersProps {
 export function ChurchgoerFilters({ onSearch, initialValues = {} }: ChurchgoerFiltersProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const region = useCurrentRegion();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -32,7 +34,7 @@ export function ChurchgoerFilters({ onSearch, initialValues = {} }: ChurchgoerFi
   }
 
   function handleReset() {
-    router.push('/churchgoers');
+    router.push(region ? `/${region}/churchgoers` : '/churchgoers');
   }
 
   return (

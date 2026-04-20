@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 import type { Churchgoer } from '@/types';
 
 interface ChurchgoerFormProps {
@@ -59,6 +60,8 @@ function Checkbox({ checked, onChange, label }: {
 
 export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormProps) {
   const router = useRouter();
+  const region = useCurrentRegion();
+  const listHref = region ? `/${region}/churchgoers` : '/churchgoers';
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -142,7 +145,7 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
 
     try {
       await onSubmit(payload);
-      router.push('/churchgoers');
+      router.push(listHref);
     } catch (err) {
       setError(err instanceof Error ? err.message : '저장에 실패했습니다.');
     } finally {
@@ -405,7 +408,7 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
         <Button type="submit" disabled={loading} className="min-w-16">
           {loading ? <Spinner size="sm" className="border-white border-t-transparent" /> : mode === 'create' ? '등록' : '수정'}
         </Button>
-        <Button type="button" variant="outline" onClick={() => router.push('/churchgoers')} disabled={loading}>
+        <Button type="button" variant="outline" onClick={() => router.push(listHref)} disabled={loading}>
           취소
         </Button>
       </div>

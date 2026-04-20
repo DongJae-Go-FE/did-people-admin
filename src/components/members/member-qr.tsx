@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { Button } from '@/components/ui/button';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 
 interface MemberQrProps {
   memberId: string;
@@ -12,7 +13,8 @@ const FRONT_URL = process.env.NEXT_PUBLIC_FRONT_URL || 'http://localhost:3003';
 
 export function MemberQr({ memberId }: MemberQrProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [url] = useState(`${FRONT_URL}/?id=${memberId}`);
+  const region = useCurrentRegion() ?? 'incheon';
+  const [url] = useState(`${FRONT_URL}/${region}?id=${memberId}`);
 
   useEffect(() => {
     if (!canvasRef.current) return;

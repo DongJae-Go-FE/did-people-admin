@@ -4,29 +4,34 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getChurchgoers, deleteChurchgoer } from '@/lib/api';
-import { ChurchgoerTable } from '@/components/churchgoers/churchgoer-table';
+import { useState } from 'react';
+import { getMembers, deleteMember, exportMembersExcel } from '@/lib/api';
+import { MemberTable } from '@/components/members/member-table';
 import { Spinner } from '@/components/ui/spinner';
-import { ChurchgoerFilters } from '@/components/churchgoers/churchgoer-filters';
+import { MemberFilters } from '@/components/members/member-filters';
 import { Pagination } from '@/components/members/pagination';
 import { Button } from '@/components/ui/button';
 import { Empty } from '@/components/ui/empty';
-import type { ChurchgoerListResponse, ChurchgoerQuery } from '@/types';
+import { useCurrentRegion } from '@/hooks/use-current-region';
+import type { MemberListResponse, MemberQuery } from '@/types';
 
 const DEFAULT_PAGE_SIZE = 10;
 
-function ChurchgoersContent() {
+function MembersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
+  const region = useCurrentRegion();
+  const basePath = region ? `/${region}/members` : '/members';
 
   const pageIndex = Number(searchParams.get('pageIndex') ?? '0');
-  const filters: ChurchgoerQuery = {
+  const filters: MemberQuery = {
     name: searchParams.get('name') ?? undefined,
     parish: searchParams.get('parish') ?? undefined,
+    cathedral: searchParams.get('cathedral') ?? undefined,
   };
 
-  function buildParams(overrides: Partial<ChurchgoerQuery & { pageIndex: number }>) {
+  function buildParams(overrides: Partial<MemberQuery & { pageIndex: number }>) {
     const merged = { ...filters, pageIndex, ...overrides };
     const params = new URLSearchParams();
     Object.entries(merged).forEach(([k, v]) => {
@@ -35,30 +40,31 @@ function ChurchgoersContent() {
     return params.toString();
   }
 
-  const { data, isLoading, error, refetch } = useQuery<ChurchgoerListResponse>({
-    queryKey: ['churchgoers', filters, pageIndex],
-    queryFn: () => getChurchgoers({ ...filters, pageIndex, pageSize: DEFAULT_PAGE_SIZE }),
+  const { data, isLoading, error, refetch } = useQuery<MemberListResponse>({
+    queryKey: ['members', filters, pageIndex],
+    queryFn: () => getMembers({ ...filters, pageIndex, pageSize: DEFAULT_PAGE_SIZE }),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteChurchgoer,
+    mutationFn: deleteMember,
     onSuccess: (_, deletedId) => {
-      queryClient.invalidateQueries({ queryKey: ['churchgoers'] });
-      const remaining = (data?.data ?? []).filter((c) => c.id !== deletedId);
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+      // 삭제 후 현재 페이지 데이터가 비면 1페이지로
+      const remaining = (data?.data ?? []).filter((m) => m.id !== deletedId);
       if (remaining.length === 0 && pageIndex > 0) {
-        router.push(`/churchgoers?${buildParams({ pageIndex: pageIndex - 1 })}`);
+        router.push(`${basePath}?${buildParams({ pageIndex: pageIndex - 1 })}`);
       }
     },
   });
 
   const handleSearch = useCallback(
-    (newFilters: ChurchgoerQuery) => {
+    (newFilters: MemberQuery) => {
       const qs = buildParams({ ...newFilters, pageIndex: 0 });
       const current = searchParams.toString();
       if (qs === current) {
         refetch();
       } else {
-        router.push(`/churchgoers?${qs}`);
+        router.push(`${basePath}?${qs}`);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,24 +73,40 @@ function ChurchgoersContent() {
 
   const handlePageChange = useCallback(
     (newPageIndex: number) => {
-      router.push(`/churchgoers?${buildParams({ pageIndex: newPageIndex })}`);
+      router.push(`${basePath}?${buildParams({ pageIndex: newPageIndex })}`);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [router, filters],
   );
+
+  const [isExporting, setIsExporting] = useState(false);
+
+  async function handleExport() {
+    setIsExporting(true);
+    try {
+      await exportMembersExcel(filters);
+    } finally {
+      setIsExporting(false);
+    }
+  }
 
   const hasFilters = Object.values(filters).some(Boolean);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">본당 홈스테이 봉사자 관리</h1>
-        <Button asChild>
-          <Link href="/churchgoers/new">+ 봉사자 등록</Link>
-        </Button>
+        <h1 className="text-2xl font-bold">본당 DID 참여인원 관리</h1>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExport} disabled={isExporting}>
+            {isExporting ? '생성 중...' : 'Excel 내보내기'}
+          </Button>
+          <Button asChild>
+            <Link href={`${basePath}/new`}>+ 참여인원 등록</Link>
+          </Button>
+        </div>
       </div>
 
-      <ChurchgoerFilters onSearch={handleSearch} initialValues={filters} />
+      <MemberFilters onSearch={handleSearch} initialValues={filters} />
 
       {error && (
         <div className="flex items-center justify-between rounded-md bg-red-50 p-3">
@@ -102,10 +124,10 @@ function ChurchgoersContent() {
           <Spinner size="lg" />
         </div>
       ) : !data?.data.length ? (
-        <Empty message={hasFilters ? '검색 결과가 없습니다.' : '등록된 봉사자가 없습니다.'} />
+        <Empty message={hasFilters ? '검색 결과가 없습니다.' : '등록된 참여인원이 없습니다.'} />
       ) : (
-        <ChurchgoerTable
-          churchgoers={data.data}
+        <MemberTable
+          members={data.data}
           onDelete={(id) => deleteMutation.mutate(id)}
         />
       )}
@@ -123,10 +145,10 @@ function ChurchgoersContent() {
   );
 }
 
-export default function ChurchgoersPage() {
+export default function MembersPage() {
   return (
     <Suspense>
-      <ChurchgoersContent />
+      <MembersContent />
     </Suspense>
   );
 }

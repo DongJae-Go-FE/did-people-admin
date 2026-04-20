@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth-context";
+import { useCurrentRegion } from "@/hooks/use-current-region";
 import type { MemberQuery } from "@/types";
 
 interface MemberFiltersProps {
@@ -19,6 +20,7 @@ export function MemberFilters({
 }: MemberFiltersProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const region = useCurrentRegion();
 
   const filterKey = useMemo(
     () => JSON.stringify(initialValues),
@@ -31,7 +33,7 @@ export function MemberFilters({
       onSearch={onSearch}
       initialValues={initialValues}
       isAdmin={user?.role === "admin"}
-      onReset={() => router.push("/members")}
+      onReset={() => router.push(region ? `/${region}/members` : "/members")}
     />
   );
 }
@@ -53,12 +55,9 @@ function MemberFiltersInner({
   const [parish, setParish] = useState(initialValues.parish ?? "");
   const [diocese, setDiocese] = useState(initialValues.diocese ?? "");
   const [cathedral, setCathedral] = useState(initialValues.cathedral ?? "");
-  const [chosenDiocese, setChosenDiocese] = useState(
-    initialValues.chosenDiocese ?? "",
-  );
 
   function handleSearch() {
-    onSearch({ name, parish, diocese, cathedral, chosenDiocese });
+    onSearch({ name, parish, diocese, cathedral });
   }
 
   return (
@@ -107,17 +106,6 @@ function MemberFiltersInner({
             onChange={(e) => setCathedral(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="성당 검색"
-            className="h-8 text-sm"
-          />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="filter-chosen-diocese" className="text-xs">선택 교구</Label>
-          <Input
-            id="filter-chosen-diocese"
-            value={chosenDiocese}
-            onChange={(e) => setChosenDiocese(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="선택 교구 검색"
             className="h-8 text-sm"
           />
         </div>

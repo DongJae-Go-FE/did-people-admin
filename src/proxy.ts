@@ -35,6 +35,10 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // /members 하위 전체 + 그 외 인증 필요 경로
-  matcher: ["/members/:path*"],
+  // /{region}/members, /{region}/churchgoers 등 인증 필요 경로
+  matcher: [
+    "/incheon/:path*",
+    "/jeju/:path*",
+    "/super/:path*",
+  ],
 };

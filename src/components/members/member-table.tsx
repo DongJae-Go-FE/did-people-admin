@@ -11,8 +11,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Spinner } from '@/components/ui/spinner';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 import type { Member } from '@/types';
 
 interface MemberTableProps {
@@ -22,6 +22,8 @@ interface MemberTableProps {
 
 export function MemberTable({ members, onDelete }: MemberTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const region = useCurrentRegion();
+  const base = region ? `/${region}` : '';
 
   async function handleDelete(id: string, name: string) {
     if (!confirm(`"${name}" 참여인원을 삭제하시겠습니까?`)) return;
@@ -44,8 +46,6 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
             <TableHead>소속 본당</TableHead>
             <TableHead>소속 교구</TableHead>
             <TableHead>배정 성당</TableHead>
-            <TableHead>선택 교구</TableHead>
-            <TableHead>배정된 지역</TableHead>
             <TableHead>연락처</TableHead>
             <TableHead>배정 봉사자</TableHead>
             <TableHead className="w-28">관리</TableHead>
@@ -55,7 +55,7 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
           {members.map((member) => (
             <TableRow key={member.id}>
               <TableCell className="font-medium">
-                <Link href={`/members/${member.id}`} className="hover:underline">
+                <Link href={`${base}/members/${member.id}`} className="hover:underline">
                   {member.name}
                 </Link>
               </TableCell>
@@ -64,16 +64,10 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
               <TableCell>{member.parish ?? '-'}</TableCell>
               <TableCell>{member.diocese ?? '-'}</TableCell>
               <TableCell>{member.cathedral ?? '-'}</TableCell>
-              <TableCell>
-                {member.chosenDiocese ? (
-                  <Badge variant="secondary">{member.chosenDiocese}</Badge>
-                ) : '-'}
-              </TableCell>
-              <TableCell>{member.region ?? '-'}</TableCell>
               <TableCell className="text-xs">{member.phone ?? '-'}</TableCell>
               <TableCell className="text-xs">
                 {member.assignedChurchgoer ? (
-                  <Link href={`/churchgoers/${member.assignedChurchgoer.id}`} className="hover:underline text-blue-600">
+                  <Link href={`${base}/churchgoers/${member.assignedChurchgoer.id}`} className="hover:underline text-blue-600">
                     {member.assignedChurchgoer.name ?? '-'}
                     {member.assignedChurchgoer.parish ? `(${member.assignedChurchgoer.parish})` : ''}
                   </Link>
@@ -84,7 +78,7 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
               <TableCell>
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/members/${member.id}/edit`}>수정</Link>
+                    <Link href={`${base}/members/${member.id}/edit`}>수정</Link>
                   </Button>
                   <Button
                     variant="destructive"

@@ -8,6 +8,7 @@ import { MemberForm } from '@/components/members/member-form';
 import { MemberFormSkeleton } from '@/components/members/member-form-skeleton';
 import { Empty } from '@/components/ui/empty';
 import { Button } from '@/components/ui/button';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 import type { Member } from '@/types';
 
 interface EditPageProps {
@@ -17,6 +18,8 @@ interface EditPageProps {
 export default function EditMemberPage({ params }: EditPageProps) {
   const { id } = use(params);
   const queryClient = useQueryClient();
+  const region = useCurrentRegion();
+  const listHref = region ? `/${region}/members` : '/members';
 
   const { data: member, isLoading, error, refetch } = useQuery({
     queryKey: ['member', id],
@@ -46,7 +49,7 @@ export default function EditMemberPage({ params }: EditPageProps) {
           <div className="flex gap-2">
             {error && <Button variant="outline" onClick={() => refetch()}>새로고침</Button>}
             <Button variant="outline" asChild>
-              <Link href="/members">목록</Link>
+              <Link href={listHref}>목록</Link>
             </Button>
           </div>
         </div>

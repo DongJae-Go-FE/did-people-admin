@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { getMember } from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { MemberDetailSkeleton } from '@/components/members/member-detail-skeleton';
 import { Empty } from '@/components/ui/empty';
 import { MemberQr } from '@/components/members/member-qr';
+import { useCurrentRegion } from '@/hooks/use-current-region';
 
 interface DetailPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; region: string }>;
 }
 
 const FIELD_LABELS: { key: string; label: string }[] = [
@@ -21,8 +21,6 @@ const FIELD_LABELS: { key: string; label: string }[] = [
   { key: 'parish', label: '소속 본당' },
   { key: 'diocese', label: '소속 교구' },
   { key: 'cathedral', label: '배정 성당' },
-  { key: 'chosenDiocese', label: '선택 교구' },
-  { key: 'region', label: '배정된 지역' },
   { key: 'phone', label: '연락처' },
   { key: 'emergencyNum', label: '비상 연락처' },
 ];
@@ -31,6 +29,10 @@ const FRONT_URL = process.env.NEXT_PUBLIC_FRONT_URL || 'http://localhost:3003';
 
 export default function MemberDetailPage({ params }: DetailPageProps) {
   const { id } = use(params);
+  const region = useCurrentRegion();
+  const listHref = region ? `/${region}/members` : '/members';
+  const editHref = region ? `/${region}/members/${id}/edit` : `/members/${id}/edit`;
+  const printRegion = region ?? 'incheon';
 
   const { data: member, isLoading, error, refetch } = useQuery({
     queryKey: ['member', id],
@@ -47,7 +49,7 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
           <div className="flex gap-2">
             {error && <Button variant="outline" onClick={() => refetch()}>새로고침</Button>}
             <Button variant="outline" asChild>
-              <Link href="/members">목록</Link>
+              <Link href={listHref}>목록</Link>
             </Button>
           </div>
         </div>
@@ -58,7 +60,7 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
 
   async function handlePrint() {
     const QRCode = (await import('qrcode')).default;
-    const qrDataUrl = await QRCode.toDataURL(`${FRONT_URL}/?id=${id}`, {
+    const qrDataUrl = await QRCode.toDataURL(`${FRONT_URL}/${printRegion}?id=${id}`, {
       width: 160,
       margin: 2,
       color: { dark: '#18181b', light: '#ffffff' },
@@ -104,10 +106,10 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
         <div className="flex gap-2">
           <Button variant="outline" onClick={handlePrint}>인쇄</Button>
           <Button variant="outline" asChild>
-            <Link href="/members">목록</Link>
+            <Link href={listHref}>목록</Link>
           </Button>
           <Button asChild>
-            <Link href={`/members/${id}/edit`}>수정</Link>
+            <Link href={editHref}>수정</Link>
           </Button>
         </div>
       </div>
@@ -119,9 +121,7 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
             <div key={key} className="flex items-center px-6 py-3">
               <span className="w-32 text-sm text-gray-500 shrink-0">{label}</span>
               <span className="text-sm font-medium">
-                {key === 'chosenDiocese' && value ? (
-                  <Badge variant="secondary">{String(value)}</Badge>
-                ) : value !== undefined && value !== null && value !== '' ? (
+                {value !== undefined && value !== null && value !== '' ? (
                   String(value)
                 ) : (
                   <span className="text-gray-300">-</span>
@@ -155,7 +155,7 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
           <div className="divide-y">
             <div className="flex items-center px-6 py-3">
               <span className="w-32 text-sm text-gray-500 shrink-0">봉사자명</span>
-              <Link href={`/churchgoers/${member.assignedChurchgoer.id}`} className="text-sm font-medium text-blue-600 hover:underline">
+              <Link href={region ? `/${region}/churchgoers/${member.assignedChurchgoer.id}` : `/churchgoers/${member.assignedChurchgoer.id}`} className="text-sm font-medium text-blue-600 hover:underline">
                 {member.assignedChurchgoer.name ?? '-'}
               </Link>
             </div>

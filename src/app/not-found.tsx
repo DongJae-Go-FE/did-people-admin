@@ -8,7 +8,7 @@ export default function NotFound() {
       <h1 className="text-xl font-semibold text-gray-700">페이지를 찾을 수 없습니다.</h1>
       <p className="text-sm text-gray-400">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
       <Button asChild variant="outline">
-        <Link href="/members">홈으로 돌아가기</Link>
+        <Link href="/login">홈으로 돌아가기</Link>
       </Button>
     </div>
   );
