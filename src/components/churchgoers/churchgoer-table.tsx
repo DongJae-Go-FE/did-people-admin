@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -32,6 +33,7 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const region = useCurrentRegion();
   const base = region ? `/${region}` : '';
+  const router = useRouter();
 
   async function handleDelete(id: string, name?: string) {
     if (!confirm(`"${name ?? id}" 봉사자를 삭제하시겠습니까?`)) return;
@@ -63,12 +65,12 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
         </TableHeader>
         <TableBody>
           {churchgoers.map((cg) => (
-            <TableRow key={cg.id}>
-              <TableCell className="font-medium">
-                <Link href={`${base}/churchgoers/${cg.id}`} className="hover:underline">
-                  {cg.name ?? '-'}
-                </Link>
-              </TableCell>
+            <TableRow
+              key={cg.id}
+              onClick={() => router.push(`${base}/churchgoers/${cg.id}`)}
+              className="cursor-pointer hover:bg-gray-50"
+            >
+              <TableCell className="font-medium">{cg.name ?? '-'}</TableCell>
               <TableCell>{cg.baptismalName ?? '-'}</TableCell>
               <TableCell>{cg.parish ?? '-'}</TableCell>
               <TableCell className="text-xs">
@@ -82,7 +84,7 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
                 {cg.assignedMemberCount ?? 0} / {cg.maxCapacity ?? '-'}
               </TableCell>
               <TableCell className="text-center">{cg.maxCapacity ?? '-'}</TableCell>
-              <TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm" asChild>
                     <Link href={`${base}/churchgoers/${cg.id}/edit`}>수정</Link>

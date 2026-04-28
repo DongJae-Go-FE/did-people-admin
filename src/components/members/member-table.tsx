@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -24,6 +25,7 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const region = useCurrentRegion();
   const base = region ? `/${region}` : '';
+  const router = useRouter();
 
   async function handleDelete(id: string, name: string) {
     if (!confirm(`"${name}" 참여인원을 삭제하시겠습니까?`)) return;
@@ -53,12 +55,12 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
         </TableHeader>
         <TableBody>
           {members.map((member) => (
-            <TableRow key={member.id}>
-              <TableCell className="font-medium">
-                <Link href={`${base}/members/${member.id}`} className="hover:underline">
-                  {member.name}
-                </Link>
-              </TableCell>
+            <TableRow
+              key={member.id}
+              onClick={() => router.push(`${base}/members/${member.id}`)}
+              className="cursor-pointer hover:bg-gray-50"
+            >
+              <TableCell className="font-medium">{member.name}</TableCell>
               <TableCell>{member.age ?? '-'}</TableCell>
               <TableCell>{member.nation ?? '-'}</TableCell>
               <TableCell>{member.parish ?? '-'}</TableCell>
@@ -67,7 +69,11 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
               <TableCell className="text-xs">{member.phone ?? '-'}</TableCell>
               <TableCell className="text-xs">
                 {member.assignedChurchgoer ? (
-                  <Link href={`${base}/churchgoers/${member.assignedChurchgoer.id}`} className="hover:underline text-blue-600">
+                  <Link
+                    href={`${base}/churchgoers/${member.assignedChurchgoer.id}`}
+                    className="hover:underline text-blue-600"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {member.assignedChurchgoer.name ?? '-'}
                     {member.assignedChurchgoer.parish ? `(${member.assignedChurchgoer.parish})` : ''}
                   </Link>
@@ -75,7 +81,7 @@ export function MemberTable({ members, onDelete }: MemberTableProps) {
                   <span className="text-gray-400">미배정</span>
                 )}
               </TableCell>
-              <TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm" asChild>
                     <Link href={`${base}/members/${member.id}/edit`}>수정</Link>
