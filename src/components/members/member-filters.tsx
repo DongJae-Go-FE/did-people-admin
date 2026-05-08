@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/contexts/auth-context";
 import { useCurrentRegion } from "@/hooks/use-current-region";
 import type { MemberQuery } from "@/types";
@@ -27,12 +34,16 @@ export function MemberFilters({
     [initialValues],
   );
 
+  const isAdmin = user?.role === "admin";
+  const isMaster = user?.role === "master";
+
   return (
     <MemberFiltersInner
       key={filterKey}
       onSearch={onSearch}
       initialValues={initialValues}
-      isAdmin={user?.role === "admin"}
+      isAdmin={isAdmin}
+      isMaster={isMaster}
       onReset={() => router.push(region ? `/${region}/members` : "/members")}
     />
   );
@@ -42,6 +53,7 @@ interface InnerProps {
   onSearch: (query: MemberQuery) => void;
   initialValues: MemberQuery;
   isAdmin?: boolean;
+  isMaster?: boolean;
   onReset: () => void;
 }
 
@@ -49,15 +61,23 @@ function MemberFiltersInner({
   onSearch,
   initialValues,
   isAdmin,
+  isMaster,
   onReset,
 }: InnerProps) {
   const [name, setName] = useState(initialValues.name ?? "");
   const [parish, setParish] = useState(initialValues.parish ?? "");
   const [diocese, setDiocese] = useState(initialValues.diocese ?? "");
   const [cathedral, setCathedral] = useState(initialValues.cathedral ?? "");
+  const [filterRegion, setFilterRegion] = useState(initialValues.region ?? "all");
 
   function handleSearch() {
-    onSearch({ name, parish, diocese, cathedral });
+    onSearch({
+      name,
+      parish,
+      diocese,
+      cathedral,
+      ...(isMaster ? { region: filterRegion } : {}),
+    });
   }
 
   return (
@@ -74,7 +94,22 @@ function MemberFiltersInner({
             className="h-8 text-sm"
           />
         </div>
-        {isAdmin && (
+        {isMaster && (
+          <div className="space-y-1">
+            <Label className="text-xs">지역</Label>
+            <Select value={filterRegion} onValueChange={setFilterRegion}>
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">전체</SelectItem>
+                <SelectItem value="incheon">인천교구</SelectItem>
+                <SelectItem value="jeju">제주교구</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        {(isAdmin || isMaster) && (
           <div className="space-y-1">
             <Label htmlFor="filter-parish" className="text-xs">소속 본당</Label>
             <Input

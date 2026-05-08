@@ -14,7 +14,7 @@ export default function Home() {
       router.replace('/login');
       return;
     }
-    const region = stored.role === 'admin' ? 'super' : (stored.region ?? 'incheon');
+    const region = stored.role === 'master' ? 'all' : (stored.region ?? 'incheon');
     router.replace(`/${region}/members`);
   }, [router]);
 

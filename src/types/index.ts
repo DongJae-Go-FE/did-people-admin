@@ -45,6 +45,7 @@ export interface MemberQuery {
   cathedral?: string;
   diocese?: string;
   chosenDiocese?: string;
+  region?: string;
 }
 
 export interface Churchgoer {
@@ -103,6 +104,7 @@ export interface ChurchgoerQuery {
   pageSize?: number;
   name?: string;
   parish?: string;
+  region?: string;
 }
 
 export interface AuthTokens {

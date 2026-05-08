@@ -29,6 +29,8 @@ function MembersContent() {
     name: searchParams.get('name') ?? undefined,
     parish: searchParams.get('parish') ?? undefined,
     cathedral: searchParams.get('cathedral') ?? undefined,
+    diocese: searchParams.get('diocese') ?? undefined,
+    region: searchParams.get('region') ?? undefined,
   };
 
   function buildParams(overrides: Partial<MemberQuery & { pageIndex: number }>) {

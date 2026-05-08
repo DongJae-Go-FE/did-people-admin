@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import type { AudienceCode } from '@/config/dioceses';
 
-const VALID_REGIONS = ['incheon', 'jeju', 'super'] as const;
+const VALID_REGIONS = ['incheon', 'jeju', 'super', 'all'] as const;
 
 export function isValidRegion(value: string | null | undefined): value is AudienceCode {
   return !!value && (VALID_REGIONS as readonly string[]).includes(value);

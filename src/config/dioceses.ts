@@ -1,5 +1,5 @@
 export type DioceseCode = 'incheon' | 'jeju';
-export type AudienceCode = DioceseCode | 'super';
+export type AudienceCode = DioceseCode | 'super' | 'all';
 
 export interface DioceseConfig {
   code: AudienceCode;
@@ -39,9 +39,20 @@ export const SUPER_CONFIG: DioceseConfig = {
   primaryColor: '#111827',
 };
 
+// master 로그인 후 사용하는 라우트(/all)용 설정
+export const ALL_CONFIG: DioceseConfig = {
+  code: 'all',
+  name: '전체 교구',
+  shortName: '전체',
+  adminTitle: 'DID DB Admin · 전체 교구',
+  loginSubtitle: '전체 교구 관리',
+  primaryColor: '#111827',
+};
+
 export function getDioceseByCode(code: string | null | undefined): DioceseConfig | null {
   if (!code) return null;
   if (code === 'super') return SUPER_CONFIG;
+  if (code === 'all') return ALL_CONFIG;
   if (code in DIOCESES) return DIOCESES[code as DioceseCode];
   return null;
 }
@@ -54,11 +65,11 @@ export function parseDioceseFromPath(pathname: string | null | undefined): Dioce
   return getDioceseByCode(match[1]);
 }
 
-// 사용자 JWT region으로 diocese 해석. region이 null/undefined면 super.
+// 사용자 JWT region으로 diocese 해석. region이 'all'/null/undefined면 ALL.
 export function resolveDioceseFromUser(
   user: { region?: string | null } | null,
 ): DioceseConfig | null {
   if (!user) return null;
-  if (!user.region) return SUPER_CONFIG;
+  if (!user.region || user.region === 'all') return ALL_CONFIG;
   return getDioceseByCode(user.region);
 }

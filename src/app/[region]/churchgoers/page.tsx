@@ -27,6 +27,7 @@ function ChurchgoersContent() {
   const filters: ChurchgoerQuery = {
     name: searchParams.get('name') ?? undefined,
     parish: searchParams.get('parish') ?? undefined,
+    region: searchParams.get('region') ?? undefined,
   };
 
   function buildParams(overrides: Partial<ChurchgoerQuery & { pageIndex: number }>) {

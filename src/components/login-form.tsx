@@ -41,8 +41,10 @@ function LoginFormInner({ diocese }: { diocese: DioceseConfig }) {
     setError("");
     setLoading(true);
     try {
-      await login(username, password, diocese.code);
-      const fallback = `/${diocese.code}/members`;
+      // diocese.code는 'incheon' | 'jeju' | 'super' (login URL 기반)
+      await login(username, password, diocese.code as 'incheon' | 'jeju' | 'super');
+      // /login/super는 master 전용 → /all/members로 진입, 그 외는 해당 region
+      const fallback = diocese.code === 'super' ? '/all/members' : `/${diocese.code}/members`;
       const redirectTo = getSafeRedirect(searchParams.get("from"), fallback);
       router.push(redirectTo);
     } catch (err) {
