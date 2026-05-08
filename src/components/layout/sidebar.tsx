@@ -38,11 +38,10 @@ export function Sidebar() {
     { href: `${regionPrefix}/churchgoers`, label: '본당 홈스테이 봉사자 관리' },
   ];
 
-  const isSuperAdmin = user?.role === 'admin';
+  const isMaster = user?.role === 'master';
   const switcherOptions = [
     { code: 'incheon', name: DIOCESES.incheon.name },
     { code: 'jeju', name: DIOCESES.jeju.name },
-    { code: 'super', name: '전체 교구' },
   ];
 
   function handleRegionChange(next: string) {
@@ -59,7 +58,7 @@ export function Sidebar() {
         {mounted && diocese && <span className="text-xs text-gray-500">{diocese.name}</span>}
       </div>
 
-      {mounted && isSuperAdmin && region && (
+      {mounted && isMaster && region && (
         <div className="border-b px-4 py-3">
           <label className="block text-xs text-gray-500 mb-1">지역 전환</label>
           <Select value={region} onValueChange={handleRegionChange}>
@@ -98,7 +97,7 @@ export function Sidebar() {
         {mounted && user && (
           <div className="text-xs text-gray-500">
             <p className="font-medium text-gray-700 truncate">{user.email}</p>
-            <p>{user.role === 'admin' ? '관리자' : '매니저'}{diocese ? ` · ${diocese.name}` : ''}</p>
+            <p>{user.role === 'master' ? '슈퍼 관리자' : user.role === 'admin' ? '관리자' : '매니저'}{diocese ? ` · ${diocese.name}` : ''}</p>
           </div>
         )}
         <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>

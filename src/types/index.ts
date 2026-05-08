@@ -1,7 +1,7 @@
 export interface User {
   id: string;
   email: string;
-  role: 'admin' | 'manager';
+  role: 'master' | 'admin' | 'manager';
   region?: string;
   nave?: string;
 }
