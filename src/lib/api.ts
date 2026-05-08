@@ -136,6 +136,13 @@ export async function deleteMember(id: string): Promise<void> {
   if (!res.ok) throw new Error('멤버 삭제에 실패했습니다.');
 }
 
+export async function getMemberParishes(region?: string): Promise<string[]> {
+  const qs = region ? `?region=${encodeURIComponent(region)}` : '';
+  const res = await fetchWithAuth(`/members/parishes${qs}`);
+  if (!res.ok) throw new Error('본당 목록을 불러오지 못했습니다.');
+  return res.json();
+}
+
 // Churchgoers API
 export async function getChurchgoers(query: ChurchgoerQuery = {}): Promise<ChurchgoerListResponse> {
   const params = new URLSearchParams();
@@ -181,6 +188,13 @@ export async function updateChurchgoer(id: string, data: Partial<Churchgoer>): P
 export async function deleteChurchgoer(id: string): Promise<void> {
   const res = await fetchWithAuth(`/churchgoers/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('봉사자 삭제에 실패했습니다.');
+}
+
+export async function getChurchgoerParishes(region?: string): Promise<string[]> {
+  const qs = region ? `?region=${encodeURIComponent(region)}` : '';
+  const res = await fetchWithAuth(`/churchgoers/parishes${qs}`);
+  if (!res.ok) throw new Error('본당 목록을 불러오지 못했습니다.');
+  return res.json();
 }
 
 // Assignment API

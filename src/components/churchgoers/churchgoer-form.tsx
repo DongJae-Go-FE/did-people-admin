@@ -2,12 +2,22 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
+import { useAuth } from '@/contexts/auth-context';
 import { useCurrentRegion } from '@/hooks/use-current-region';
+import { getChurchgoerParishes } from '@/lib/api';
 import type { Churchgoer } from '@/types';
 
 interface ChurchgoerFormProps {
@@ -60,12 +70,15 @@ function Checkbox({ checked, onChange, label }: {
 
 export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const region = useCurrentRegion();
   const listHref = region ? `/${region}/churchgoers` : '/churchgoers';
+  const isMaster = user?.role === 'master';
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   // 기본 정보
+  const [formRegion, setFormRegion] = useState(initialData?.region ?? '');
   const [district, setDistrict] = useState(initialData?.district ?? '');
   const [ban, setBan] = useState(initialData?.ban ?? '');
   const [name, setName] = useState(initialData?.name ?? '');
@@ -73,6 +86,14 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
   const [phone, setPhone] = useState(initialData?.phone ?? '');
   const [address, setAddress] = useState(initialData?.address ?? '');
   const [parish, setParish] = useState(initialData?.parish ?? '');
+
+  // 본당 후보 목록: master만 사용
+  const parishesQuery = useQuery({
+    queryKey: ['churchgoer-parishes', formRegion],
+    queryFn: () => getChurchgoerParishes(formRegion || undefined),
+    enabled: isMaster && !!formRegion,
+  });
+  const parishOptions = parishesQuery.data ?? [];
   const [familyType, setFamilyType] = useState(initialData?.familyType ?? '');
   const [childrenCount, setChildrenCount] = useState(initialData?.childrenCount?.toString() ?? '');
   const [familyTypeOther, setFamilyTypeOther] = useState(initialData?.familyTypeOther ?? '');
@@ -115,6 +136,8 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
       baptismalName: baptismalName || undefined,
       phone: phone || undefined,
       address: address || undefined,
+      // master만 region 직접 지정 가능 (admin/manager는 백엔드가 본인 region으로 강제)
+      ...(isMaster && formRegion ? { region: formRegion } : {}),
       parish: parish || undefined,
       district: district || undefined,
       ban: ban || undefined,
@@ -160,6 +183,26 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
         <CardHeader><CardTitle>봉사자 기본 정보</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {isMaster && (
+              <div className="space-y-1">
+                <Label className="text-sm">지역</Label>
+                <Select
+                  value={formRegion || undefined}
+                  onValueChange={(v) => {
+                    setFormRegion(v);
+                    setParish('');
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="지역 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="incheon">인천교구</SelectItem>
+                    <SelectItem value="jeju">제주교구</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-1">
               <Label htmlFor="f-district" className="text-sm">구역</Label>
               <Input id="f-district" value={district} onChange={(e) => setDistrict(e.target.value)} />
@@ -186,7 +229,21 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
             </div>
             <div className="space-y-1">
               <Label htmlFor="f-parish" className="text-sm">본당</Label>
-              <Input id="f-parish" value={parish} onChange={(e) => setParish(e.target.value)} />
+              <Input
+                id="f-parish"
+                list={isMaster ? 'churchgoer-parish-options' : undefined}
+                value={parish}
+                onChange={(e) => setParish(e.target.value)}
+                disabled={isMaster && !formRegion}
+                placeholder={isMaster && !formRegion ? '먼저 지역 선택' : undefined}
+              />
+              {isMaster && (
+                <datalist id="churchgoer-parish-options">
+                  {parishOptions.map((p) => (
+                    <option key={p} value={p} />
+                  ))}
+                </datalist>
+              )}
             </div>
           </div>
 

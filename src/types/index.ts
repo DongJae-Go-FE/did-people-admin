@@ -54,6 +54,7 @@ export interface Churchgoer {
   baptismalName?: string;
   phone?: string;
   address?: string;
+  region?: string;
   parish?: string;
   district?: string;
   ban?: string;
