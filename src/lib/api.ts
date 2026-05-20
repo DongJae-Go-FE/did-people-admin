@@ -4,6 +4,9 @@ import type {
   Churchgoer,
   ChurchgoerListResponse,
   ChurchgoerQuery,
+  DioceseVolunteer,
+  DioceseVolunteerListResponse,
+  DioceseVolunteerQuery,
   LoginResponse,
   Member,
   MemberListResponse,
@@ -87,6 +90,21 @@ export async function login(
 export async function logout(): Promise<void> {
   await fetch('/api/auth/logout', { method: 'POST' });
   clearUser();
+}
+
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+): Promise<{ message: string }> {
+  const res = await fetchWithAuth('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || '비밀번호 변경에 실패했습니다.');
+  }
+  return res.json();
 }
 
 // Members API
@@ -221,6 +239,60 @@ export async function getAssignedMembers(churchgoerId: string): Promise<Assigned
   const res = await fetchWithAuth(`/churchgoers/${churchgoerId}/assignments`);
   if (!res.ok) throw new Error('배정 멤버 목록을 불러오지 못했습니다.');
   return res.json();
+}
+
+// Diocese Volunteers API (교구청 봉사자)
+export async function getDioceseVolunteers(
+  query: DioceseVolunteerQuery = {},
+): Promise<DioceseVolunteerListResponse> {
+  const params = new URLSearchParams();
+  Object.entries(query).forEach(([k, v]) => {
+    if (v !== undefined && v !== '') params.append(k, String(v));
+  });
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  const res = await fetchWithAuth(`/diocese-volunteers${qs}`);
+  if (!res.ok) throw new Error('교구청 봉사자 목록을 불러오지 못했습니다.');
+  return res.json();
+}
+
+export async function getDioceseVolunteer(id: string): Promise<DioceseVolunteer> {
+  const res = await fetchWithAuth(`/diocese-volunteers/${id}`);
+  if (!res.ok) throw new Error('교구청 봉사자를 불러오지 못했습니다.');
+  return res.json();
+}
+
+export async function createDioceseVolunteer(
+  data: Partial<DioceseVolunteer>,
+): Promise<DioceseVolunteer> {
+  const res = await fetchWithAuth('/diocese-volunteers', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || '교구청 봉사자 등록에 실패했습니다.');
+  }
+  return res.json();
+}
+
+export async function updateDioceseVolunteer(
+  id: string,
+  data: Partial<DioceseVolunteer>,
+): Promise<DioceseVolunteer> {
+  const res = await fetchWithAuth(`/diocese-volunteers/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || '교구청 봉사자 수정에 실패했습니다.');
+  }
+  return res.json();
+}
+
+export async function deleteDioceseVolunteer(id: string): Promise<void> {
+  const res = await fetchWithAuth(`/diocese-volunteers/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('교구청 봉사자 삭제에 실패했습니다.');
 }
 
 export async function exportMembersExcel(filters: MemberQuery = {}): Promise<void> {

@@ -52,10 +52,12 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
           <TableRow>
             <TableHead>이름</TableHead>
             <TableHead>세례명</TableHead>
+            <TableHead>생년월일</TableHead>
             <TableHead>본당</TableHead>
             <TableHead>구역/반</TableHead>
             <TableHead>주소</TableHead>
             <TableHead>연락처</TableHead>
+            <TableHead>비상연락처</TableHead>
             <TableHead className="text-center">아침</TableHead>
             <TableHead className="text-center">저녁</TableHead>
             <TableHead className="text-center">배정 인원</TableHead>
@@ -72,12 +74,14 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
             >
               <TableCell className="font-medium">{cg.name ?? '-'}</TableCell>
               <TableCell>{cg.baptismalName ?? '-'}</TableCell>
+              <TableCell className="text-xs">{cg.birthDate ? cg.birthDate.slice(0, 10) : '-'}</TableCell>
               <TableCell>{cg.parish ?? '-'}</TableCell>
               <TableCell className="text-xs">
                 {[cg.district, cg.ban].filter(Boolean).join(' / ') || '-'}
               </TableCell>
               <TableCell className="text-xs max-w-40 truncate">{cg.address ?? '-'}</TableCell>
               <TableCell className="text-xs">{cg.phone ?? '-'}</TableCell>
+              <TableCell className="text-xs">{cg.emergencyContact ?? '-'}</TableCell>
               <TableCell className="text-center"><BoolIcon value={cg.breakfastAvailable} /></TableCell>
               <TableCell className="text-center"><BoolIcon value={cg.dinnerAvailable} /></TableCell>
               <TableCell className="text-center">

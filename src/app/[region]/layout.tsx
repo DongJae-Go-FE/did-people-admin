@@ -19,6 +19,12 @@ export default function RegionLayout({ children, params }: RegionLayoutProps) {
   useEffect(() => {
     if (!user) return;
 
+    // 최초 로그인이면 비밀번호 변경 강제
+    if (user.isFirstLogin) {
+      router.replace('/change-password');
+      return;
+    }
+
     // 사용자의 home region 계산
     // - master: '/all'
     // - admin/manager: 본인 region

@@ -128,7 +128,9 @@ export default function ChurchgoerDetailPage({ params }: DetailPageProps) {
           <Field label="반" value={cg.ban} />
           <Field label="가구주 성명" value={cg.name} />
           <Field label="세례명" value={cg.baptismalName} />
+          <Field label="생년월일" value={cg.birthDate ? cg.birthDate.slice(0, 10) : undefined} />
           <Field label="연락처" value={cg.phone} />
+          <Field label="비상연락처" value={cg.emergencyContact} />
           <Field label="도로명 주소" value={cg.address} />
           <Field label="본당" value={cg.parish} />
           <Field label="가족 구성원" value={familyTypeDisplay} />

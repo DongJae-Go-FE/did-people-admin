@@ -83,7 +83,9 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
   const [ban, setBan] = useState(initialData?.ban ?? '');
   const [name, setName] = useState(initialData?.name ?? '');
   const [baptismalName, setBaptismalName] = useState(initialData?.baptismalName ?? '');
+  const [birthDate, setBirthDate] = useState(initialData?.birthDate ? initialData.birthDate.slice(0, 10) : '');
   const [phone, setPhone] = useState(initialData?.phone ?? '');
+  const [emergencyContact, setEmergencyContact] = useState(initialData?.emergencyContact ?? '');
   const [address, setAddress] = useState(initialData?.address ?? '');
   const [parish, setParish] = useState(initialData?.parish ?? '');
 
@@ -134,7 +136,9 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
     const payload: Partial<Churchgoer> = {
       name: name || undefined,
       baptismalName: baptismalName || undefined,
+      birthDate: birthDate || undefined,
       phone: phone || undefined,
+      emergencyContact: emergencyContact || undefined,
       address: address || undefined,
       // master만 region 직접 지정 가능 (admin/manager는 백엔드가 본인 region으로 강제)
       ...(isMaster && formRegion ? { region: formRegion } : {}),
@@ -220,8 +224,21 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
               <Input id="f-baptismal" value={baptismalName} onChange={(e) => setBaptismalName(e.target.value)} />
             </div>
             <div className="space-y-1">
+              <Label htmlFor="f-birth" className="text-sm">생년월일</Label>
+              <Input id="f-birth" type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
+            </div>
+            <div className="space-y-1">
               <Label htmlFor="f-phone" className="text-sm">연락처</Label>
               <Input id="f-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="f-emergency" className="text-sm">비상연락처</Label>
+              <Input
+                id="f-emergency"
+                value={emergencyContact}
+                onChange={(e) => setEmergencyContact(e.target.value)}
+                placeholder="예: 010-1234-5678 (배우자)"
+              />
             </div>
             <div className="space-y-1 col-span-2">
               <Label htmlFor="f-address" className="text-sm">도로명 주소</Label>

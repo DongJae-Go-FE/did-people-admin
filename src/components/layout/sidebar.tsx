@@ -25,9 +25,13 @@ export function Sidebar() {
   }
 
   const regionPrefix = region ? `/${region}` : '';
+  const canManageDiocese = user?.role === 'master' || user?.role === 'admin';
   const navItems = [
     { href: `${regionPrefix}/members`, label: '본당 DID 참여인원 관리' },
     { href: `${regionPrefix}/churchgoers`, label: '본당 홈스테이 봉사자 관리' },
+    ...(canManageDiocese
+      ? [{ href: `${regionPrefix}/diocese-volunteers`, label: '교구청 봉사자 관리' }]
+      : []),
   ];
 
   return (

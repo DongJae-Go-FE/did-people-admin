@@ -1,10 +1,10 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useCallback, useSyncExternalStore } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { User } from '@/types';
 import { login as apiLogin, logout as apiLogout } from '@/lib/api';
-import { getStoredUser, saveUser, clearUser } from '@/lib/auth';
+import { getStoredUser, saveUser, clearUser, subscribeToUser } from '@/lib/auth';
 
 type RequiredRegion = 'incheon' | 'jeju' | 'super';
 
@@ -12,28 +12,26 @@ interface AuthContextValue {
   user: User | null;
   login: (username: string, password: string, requiredRegion?: RequiredRegion) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (next: User) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+// SSR snapshot — 서버에서는 항상 null 로 시작 (하이드레이션 일관성)
+const getServerSnapshot = (): User | null => null;
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  // SSR 하이드레이션 일관성을 위해 초기값은 null로 두고 useEffect에서 로컬스토리지 반영.
-  const [user, setUser] = useState<User | null>(null);
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    setUser(getStoredUser());
-  }, []);
+  // localStorage 를 외부 store 로 취급. setState-in-effect 패턴 회피.
+  const user = useSyncExternalStore(subscribeToUser, getStoredUser, getServerSnapshot);
 
   const login = useCallback(
     async (username: string, password: string, requiredRegion?: RequiredRegion) => {
-      // 로그인 시도 전에 이전 사용자 캐시 완전 제거 → 다른 교구 데이터 누출 방지
       clearUser();
       queryClient.clear();
-
       const data = await apiLogin(username, password, requiredRegion);
       saveUser(data.user);
-      setUser(data.user);
     },
     [queryClient],
   );
@@ -41,12 +39,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     await apiLogout().catch(() => {});
     clearUser();
-    setUser(null);
     queryClient.clear();
   }, [queryClient]);
 
+  const updateUser = useCallback((next: User) => {
+    saveUser(next);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

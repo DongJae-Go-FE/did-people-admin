@@ -3,6 +3,7 @@
 import { useState, FormEvent, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { getStoredUser } from "@/lib/auth";
 import type { DioceseConfig } from "@/config/dioceses";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,12 @@ function LoginFormInner({ diocese }: { diocese: DioceseConfig }) {
     try {
       // diocese.code는 'incheon' | 'jeju' | 'super' (login URL 기반)
       await login(username, password, diocese.code as 'incheon' | 'jeju' | 'super');
+      // login() 이 saveUser 까지 마치므로 getStoredUser 가 최신값을 반환
+      const fresh = getStoredUser();
+      if (fresh?.isFirstLogin) {
+        router.push('/change-password');
+        return;
+      }
       // /login/super는 master 전용 → /all/members로 진입, 그 외는 해당 region
       const fallback = diocese.code === 'super' ? '/all/members' : `/${diocese.code}/members`;
       const redirectTo = getSafeRedirect(searchParams.get("from"), fallback);
@@ -91,6 +98,15 @@ function LoginFormInner({ diocese }: { diocese: DioceseConfig }) {
               {loading ? <Spinner size="sm" className="border-white border-t-transparent" /> : "로그인"}
             </Button>
           </form>
+          <div className="mt-6 border-t pt-4 text-center text-xs text-muted-foreground">
+            <p>비밀번호를 잊으셨거나 로그인 관련 문의는 아래 메일로 연락해주세요.</p>
+            <a
+              href="mailto:masterforce999@naver.com"
+              className="mt-1 inline-block font-medium text-gray-700 hover:underline"
+            >
+              masterforce999@naver.com
+            </a>
+          </div>
         </CardContent>
       </Card>
 

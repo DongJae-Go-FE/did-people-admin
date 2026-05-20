@@ -14,6 +14,10 @@ export default function Home() {
       router.replace('/login');
       return;
     }
+    if (stored.isFirstLogin) {
+      router.replace('/change-password');
+      return;
+    }
     const region = stored.role === 'master' ? 'all' : (stored.region ?? 'incheon');
     router.replace(`/${region}/members`);
   }, [router]);

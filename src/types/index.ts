@@ -4,6 +4,7 @@ export interface User {
   role: 'master' | 'admin' | 'manager';
   region?: string;
   nave?: string;
+  isFirstLogin?: boolean;
 }
 
 export interface Member {
@@ -52,7 +53,9 @@ export interface Churchgoer {
   id: string;
   name?: string;
   baptismalName?: string;
+  birthDate?: string;
   phone?: string;
+  emergencyContact?: string;
   address?: string;
   region?: string;
   parish?: string;
@@ -105,6 +108,34 @@ export interface ChurchgoerQuery {
   pageSize?: number;
   name?: string;
   parish?: string;
+  region?: string;
+}
+
+export interface DioceseVolunteer {
+  id: string;
+  name?: string;
+  baptismalName?: string;
+  age?: number;
+  email?: string;
+  address?: string;
+  possibleServices?: string[];
+  isActive?: boolean;
+  intention?: string;
+  notes?: string;
+  region?: string;
+  createdAt?: string;
+}
+
+export interface DioceseVolunteerListResponse {
+  data: DioceseVolunteer[];
+  meta: MemberListMeta;
+}
+
+export interface DioceseVolunteerQuery {
+  pageIndex?: number;
+  pageSize?: number;
+  name?: string;
+  isActive?: string;
   region?: string;
 }
 
