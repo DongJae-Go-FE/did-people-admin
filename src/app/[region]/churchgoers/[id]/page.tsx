@@ -166,19 +166,12 @@ export default function ChurchgoerDetailPage({ params }: DetailPageProps) {
         </div>
       </div>
 
-      {/* 섹션 3: 식사 및 흡연 */}
+      {/* 섹션 3: 흡연 */}
       <div className="rounded-lg border bg-white">
         <div className="border-b px-6 py-3">
-          <h2 className="text-sm font-semibold text-gray-700">식사 및 흡연</h2>
+          <h2 className="text-sm font-semibold text-gray-700">흡연</h2>
         </div>
         <div className="divide-y">
-          <div className="flex items-center px-6 py-3">
-            <span className="w-40 text-sm text-gray-500 shrink-0">식사 제공</span>
-            <div className="flex gap-2">
-              <BoolBadge value={cg.breakfastAvailable} label="아침" />
-              <BoolBadge value={cg.dinnerAvailable} label="저녁" />
-            </div>
-          </div>
           <Field label="흡연 정책" value={cg.smokingPolicy} />
         </div>
       </div>

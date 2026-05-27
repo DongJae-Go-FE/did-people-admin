@@ -79,8 +79,6 @@ export interface Churchgoer {
   hasWasher?: boolean;
   smokingPolicy?: string;
   transportationType?: string;
-  breakfastAvailable?: boolean;
-  dinnerAvailable?: boolean;
   availableRooms?: number;
   maxCapacity?: number;
   notes?: string;

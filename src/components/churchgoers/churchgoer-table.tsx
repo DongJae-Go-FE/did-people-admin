@@ -21,14 +21,6 @@ interface ChurchgoerTableProps {
   onDelete: (id: string) => void;
 }
 
-function BoolIcon({ value }: { value?: boolean }) {
-  return value ? (
-    <span className="text-green-600 font-bold">&#10003;</span>
-  ) : (
-    <span className="text-gray-300">&mdash;</span>
-  );
-}
-
 export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const region = useCurrentRegion();
@@ -58,8 +50,6 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
             <TableHead>주소</TableHead>
             <TableHead>연락처</TableHead>
             <TableHead>비상연락처</TableHead>
-            <TableHead className="text-center">아침</TableHead>
-            <TableHead className="text-center">저녁</TableHead>
             <TableHead className="text-center">배정 인원</TableHead>
             <TableHead className="text-center">수용 인원</TableHead>
             <TableHead className="w-28">관리</TableHead>
@@ -82,8 +72,6 @@ export function ChurchgoerTable({ churchgoers, onDelete }: ChurchgoerTableProps)
               <TableCell className="text-xs max-w-40 truncate">{cg.address ?? '-'}</TableCell>
               <TableCell className="text-xs">{cg.phone ?? '-'}</TableCell>
               <TableCell className="text-xs">{cg.emergencyContact ?? '-'}</TableCell>
-              <TableCell className="text-center"><BoolIcon value={cg.breakfastAvailable} /></TableCell>
-              <TableCell className="text-center"><BoolIcon value={cg.dinnerAvailable} /></TableCell>
               <TableCell className="text-center">
                 {cg.assignedMemberCount ?? 0} / {cg.maxCapacity ?? '-'}
               </TableCell>

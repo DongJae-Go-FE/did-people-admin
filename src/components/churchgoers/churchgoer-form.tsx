@@ -117,9 +117,6 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
   const [hasWifi, setHasWifi] = useState(initialData?.hasWifi ?? false);
   const [hasWasher, setHasWasher] = useState(initialData?.hasWasher ?? false);
 
-  // 식사 및 흡연
-  const [breakfastAvailable, setBreakfastAvailable] = useState(initialData?.breakfastAvailable ?? false);
-  const [dinnerAvailable, setDinnerAvailable] = useState(initialData?.dinnerAvailable ?? false);
   const [smokingPolicy, setSmokingPolicy] = useState(initialData?.smokingPolicy ?? '');
 
   // 이동 지원
@@ -163,8 +160,6 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
       hasWasher,
       smokingPolicy: smokingPolicy || undefined,
       transportationType: transportationType || undefined,
-      breakfastAvailable,
-      dinnerAvailable,
       availableRooms: availableRooms ? Number(availableRooms) : undefined,
       maxCapacity: maxCapacity ? Number(maxCapacity) : undefined,
       notes: notes || undefined,
@@ -419,18 +414,10 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
         </CardContent>
       </Card>
 
-      {/* 섹션 3: 식사 및 흡연 */}
+      {/* 섹션 3: 흡연 */}
       <Card>
-        <CardHeader><CardTitle>식사 및 흡연</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label className="text-sm">식사 제공</Label>
-            <div className="flex flex-wrap gap-6">
-              <Checkbox checked={breakfastAvailable} onChange={setBreakfastAvailable} label="아침식사" />
-              <Checkbox checked={dinnerAvailable} onChange={setDinnerAvailable} label="저녁식사" />
-            </div>
-          </div>
-
+        <CardHeader><CardTitle>흡연</CardTitle></CardHeader>
+        <CardContent>
           <div className="space-y-2">
             <Label className="text-sm">흡연 정책</Label>
             <RadioGroup
