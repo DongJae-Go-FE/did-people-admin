@@ -34,8 +34,8 @@ function LoginFormInner({ diocese }: { diocese: DioceseConfig }) {
     setError("");
     setLoading(true);
     try {
-      // diocese.code는 'incheon' | 'jeju' | 'super' (login URL 기반)
-      await login(username, password, diocese.code as 'incheon' | 'jeju' | 'super');
+      // diocese.code는 'incheon' | 'jeju' | 'suwon' | 'super' (login URL 기반)
+      await login(username, password, diocese.code as 'incheon' | 'jeju' | 'suwon' | 'super');
       // login() 이 saveUser 까지 마치므로 getStoredUser 가 최신값을 반환
       const fresh = getStoredUser();
       if (fresh?.isFirstLogin) {

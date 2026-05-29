@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import type { AudienceCode } from '@/config/dioceses';
 
 // post-login URL 세그먼트 — '/super'는 더 이상 사용하지 않음 (master는 '/all'로 진입)
-const VALID_REGIONS = ['incheon', 'jeju', 'all'] as const;
+const VALID_REGIONS = ['incheon', 'jeju', 'suwon', 'all'] as const;
 
 export function isValidRegion(value: string | null | undefined): value is AudienceCode {
   return !!value && (VALID_REGIONS as readonly string[]).includes(value);

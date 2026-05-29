@@ -105,6 +105,7 @@ function MemberFiltersInner({
                 <SelectItem value="all">전체</SelectItem>
                 <SelectItem value="incheon">인천교구</SelectItem>
                 <SelectItem value="jeju">제주교구</SelectItem>
+                <SelectItem value="suwon">수원교구</SelectItem>
               </SelectContent>
             </Select>
           </div>

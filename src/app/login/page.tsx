@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DIOCESES } from "@/config/dioceses";
 
 export default function LoginPickerPage() {
-  const options = [DIOCESES.incheon, DIOCESES.jeju];
+  const options = [DIOCESES.incheon, DIOCESES.jeju, DIOCESES.suwon];
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">

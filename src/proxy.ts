@@ -40,6 +40,7 @@ export const config = {
   matcher: [
     "/incheon/:path*",
     "/jeju/:path*",
+    "/suwon/:path*",
     "/all/:path*",
     "/super/:path*",
   ],

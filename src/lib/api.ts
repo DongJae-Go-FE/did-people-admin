@@ -73,7 +73,7 @@ async function fetchWithAuth(
 export async function login(
   username: string,
   password: string,
-  requiredRegion?: 'incheon' | 'jeju' | 'super',
+  requiredRegion?: 'incheon' | 'jeju' | 'suwon' | 'super',
 ): Promise<LoginResponse> {
   const res = await fetch('/api/auth/login', {
     method: 'POST',

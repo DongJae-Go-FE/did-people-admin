@@ -1,4 +1,4 @@
-export type DioceseCode = 'incheon' | 'jeju';
+export type DioceseCode = 'incheon' | 'jeju' | 'suwon';
 export type AudienceCode = DioceseCode | 'super' | 'all';
 
 export interface DioceseConfig {
@@ -27,6 +27,14 @@ export const DIOCESES: Record<DioceseCode, DioceseConfig> = {
     adminTitle: 'DID DB Admin · 제주교구',
     loginSubtitle: '제주교구 관리자 로그인',
     primaryColor: '#ea580c',
+  },
+  suwon: {
+    code: 'suwon',
+    name: '수원교구',
+    shortName: '수원',
+    adminTitle: 'DID DB Admin · 수원교구',
+    loginSubtitle: '수원교구 관리자 로그인',
+    primaryColor: '#15803d',
   },
 };
 

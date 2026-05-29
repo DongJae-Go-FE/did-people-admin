@@ -6,7 +6,7 @@ import type { User } from '@/types';
 import { login as apiLogin, logout as apiLogout } from '@/lib/api';
 import { getStoredUser, saveUser, clearUser, subscribeToUser } from '@/lib/auth';
 
-type RequiredRegion = 'incheon' | 'jeju' | 'super';
+type RequiredRegion = 'incheon' | 'jeju' | 'suwon' | 'super';
 
 interface AuthContextValue {
   user: User | null;

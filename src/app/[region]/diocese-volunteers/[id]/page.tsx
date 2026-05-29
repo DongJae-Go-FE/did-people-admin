@@ -85,7 +85,7 @@ export default function DioceseVolunteerDetailPage({ params }: DetailPageProps) 
           <Field label="나이" value={v.age} />
           <Field label="이메일" value={v.email} />
           <Field label="주소" value={v.address} />
-          <Field label="지역(교구)" value={v.region === 'incheon' ? '인천교구' : v.region === 'jeju' ? '제주교구' : v.region} />
+          <Field label="지역(교구)" value={v.region === 'incheon' ? '인천교구' : v.region === 'jeju' ? '제주교구' : v.region === 'suwon' ? '수원교구' : v.region} />
         </div>
       </div>
 

@@ -134,6 +134,7 @@ export function DioceseVolunteerForm({ initialData, onSubmit, mode }: DioceseVol
                   <SelectContent>
                     <SelectItem value="incheon">인천교구</SelectItem>
                     <SelectItem value="jeju">제주교구</SelectItem>
+                    <SelectItem value="suwon">수원교구</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
