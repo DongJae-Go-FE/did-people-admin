@@ -36,9 +36,11 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // /{region}/members, /{region}/churchgoers 등 인증 필요 경로
+  // master는 '/all'로 진입하므로 반드시 포함. '/super'는 deprecated이나 무해하게 유지.
   matcher: [
     "/incheon/:path*",
     "/jeju/:path*",
+    "/all/:path*",
     "/super/:path*",
   ],
 };

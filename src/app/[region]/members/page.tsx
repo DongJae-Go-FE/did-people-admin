@@ -130,7 +130,7 @@ function MembersContent() {
       ) : (
         <MemberTable
           members={data.data}
-          onDelete={(id) => deleteMutation.mutate(id)}
+          onDelete={(id) => deleteMutation.mutateAsync(id)}
         />
       )}
 

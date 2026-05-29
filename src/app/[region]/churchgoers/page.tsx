@@ -110,7 +110,7 @@ function ChurchgoersContent() {
       ) : (
         <ChurchgoerTable
           churchgoers={data.data}
-          onDelete={(id) => deleteMutation.mutate(id)}
+          onDelete={(id) => deleteMutation.mutateAsync(id)}
         />
       )}
 

@@ -33,6 +33,8 @@ export function DioceseVolunteerTable({ volunteers, onDelete }: DioceseVolunteer
     setDeletingId(id);
     try {
       await onDelete(id);
+    } catch {
+      // 에러는 상위 mutation에서 처리 — 여기선 버튼 상태만 복구
     } finally {
       setDeletingId(null);
     }

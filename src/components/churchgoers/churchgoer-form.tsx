@@ -127,6 +127,7 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (loading) return; // 진행 중 재제출(엔터/더블클릭) 차단
     setError('');
     setLoading(true);
 
@@ -167,10 +168,10 @@ export function ChurchgoerForm({ initialData, onSubmit, mode }: ChurchgoerFormPr
 
     try {
       await onSubmit(payload);
+      // 성공 시 loading 유지 — 목록 이동 동안 버튼 비활성으로 재제출 방지
       router.push(listHref);
     } catch (err) {
       setError(err instanceof Error ? err.message : '저장에 실패했습니다.');
-    } finally {
       setLoading(false);
     }
   }

@@ -66,12 +66,21 @@ export default function MemberDetailPage({ params }: DetailPageProps) {
       color: { dark: '#18181b', light: '#ffffff' },
     });
 
+    // 인쇄 HTML에 들어가는 모든 동적 값은 이스케이프 (멤버 필드 경유 XSS 방지)
+    const escapeHtml = (s: string) =>
+      s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
     const rows = FIELD_LABELS.map(({ key, label }) => {
       const value = member![key as keyof typeof member];
       if (value === undefined || value === null || value === '') return '';
       return `<tr>
-        <td style="padding:8px 12px;color:#6b7280;width:120px;font-size:13px;border-bottom:1px solid #e5e7eb">${label}</td>
-        <td style="padding:8px 12px;font-weight:500;font-size:13px;border-bottom:1px solid #e5e7eb">${String(value)}</td>
+        <td style="padding:8px 12px;color:#6b7280;width:120px;font-size:13px;border-bottom:1px solid #e5e7eb">${escapeHtml(label)}</td>
+        <td style="padding:8px 12px;font-weight:500;font-size:13px;border-bottom:1px solid #e5e7eb">${escapeHtml(String(value))}</td>
       </tr>`;
     }).join('');
 

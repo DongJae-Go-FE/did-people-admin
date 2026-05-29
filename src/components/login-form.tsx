@@ -10,15 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 function getSafeRedirect(from: string | null, fallback: string): string {
   if (!from) return fallback;
@@ -39,6 +30,7 @@ function LoginFormInner({ diocese }: { diocese: DioceseConfig }) {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (loading) return; // 진행 중 재제출(엔터/더블클릭) 차단
     setError("");
     setLoading(true);
     try {
@@ -54,9 +46,9 @@ function LoginFormInner({ diocese }: { diocese: DioceseConfig }) {
       const fallback = diocese.code === 'super' ? '/all/members' : `/${diocese.code}/members`;
       const redirectTo = getSafeRedirect(searchParams.get("from"), fallback);
       router.push(redirectTo);
+      // 성공 시 loading 유지 — 네비게이션 동안 버튼 비활성으로 재제출 방지
     } catch (err) {
       setError(err instanceof Error ? err.message : "로그인에 실패했습니다.");
-    } finally {
       setLoading(false);
     }
   }
@@ -94,6 +86,9 @@ function LoginFormInner({ diocese }: { diocese: DioceseConfig }) {
                 autoComplete="current-password"
               />
             </div>
+            {error && (
+              <p role="alert" className="text-sm text-red-500">{error}</p>
+            )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Spinner size="sm" className="border-white border-t-transparent" /> : "로그인"}
             </Button>
@@ -109,18 +104,6 @@ function LoginFormInner({ diocese }: { diocese: DioceseConfig }) {
           </div>
         </CardContent>
       </Card>
-
-      <AlertDialog open={!!error} onOpenChange={(open) => !open && setError("")}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>로그인 실패</AlertDialogTitle>
-            <AlertDialogDescription>{error}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setError("")}>확인</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

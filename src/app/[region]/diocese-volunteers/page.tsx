@@ -120,7 +120,7 @@ function DioceseVolunteersContent() {
       ) : (
         <DioceseVolunteerTable
           volunteers={data.data}
-          onDelete={(id) => deleteMutation.mutate(id)}
+          onDelete={(id) => deleteMutation.mutateAsync(id)}
         />
       )}
 

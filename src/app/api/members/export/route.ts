@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import ExcelJS from 'exceljs';
 import QRCode from 'qrcode';
 
+// 함수 리전을 DB/백엔드(ap-southeast-1, 싱가포르)와 동일하게 고정 → admin↔백엔드 홉 단축
+export const preferredRegion = 'sin1';
+
 const API_URL = process.env.API_URL || 'http://localhost:3000';
 const FRONT_URL = process.env.NEXT_PUBLIC_FRONT_URL || 'http://localhost:3003';
 
